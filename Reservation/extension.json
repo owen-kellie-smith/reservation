@@ -1,0 +1,54 @@
+{
+	"name": "Reservation",
+	"version": "0.0.1",
+	"author": [
+		"Owen Kellie-Smith"
+	],
+	"url": "https://github.com/owen-kellie-smith/reservation/",
+	"descriptionmsg": "reservation-desc",
+	"license-name": "MIT",
+	"type": "other",
+	"AutoloadClasses": {
+		"HTML_QuickForm2": "PEAR/HTML/QuickForm2.php",
+  		"HTML_Table": "PEAR/HTML/Table.php",
+		"Validate": "PEAR/Validate.php",
+		"SpecialReservation": "specials/SpecialReservation.php",
+		"ReservationConcept":	"includes/ReservationConcept.php",
+		"ReservationController":	"includes/ReservationController.php",
+		"ReservationCollection": "includes/ReservationCollection.php",
+		"ReservationDBInterface": "includes/ReservationDBInterface.php",
+		"ReservationForm": "includes/ReservationForm.php",
+		"ReservationXML": "includes/ReservationXML.php",
+		"ReservationFormXML": "includes/ReservationFormXML.php",
+		"ReservationObject": "includes/ReservationObject.php",
+		"ReservationRender": "includes/ReservationRender.php"
+	},
+	"ExtensionMessagesFiles": {
+		"ReservationAlias": "Reservation.i18n.alias.php"
+	},
+	"Hooks": {
+		"LoadExtensionSchemaUpdate": [
+			"ReservationHooks::mySchemaUpdate"
+		]
+	},
+	"MessagesDirs": {
+		"Reservation": [
+			"i18n"
+		]
+	},
+	"ResourceFileModulePaths": {
+		"localBasePath": "",
+		"remoteExtPath": "Reservation"
+	},
+	"ResourceModules": {
+		"ext.Reservation": {
+			"styles": [
+				"modules/ext.Reservation.css"
+			]
+		}
+	},
+	"SpecialPages": {
+		"Reservation": "SpecialReservation"
+	},
+	"manifest_version": 1
+}
