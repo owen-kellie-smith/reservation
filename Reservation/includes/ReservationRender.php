@@ -45,12 +45,18 @@ public function __construct(ReservationObject $obj=null){
 public function get_rendered_result( $u=array(), $pageTitle='' ){
 		$r = array();
 			if (isset($u['table'])){
-                               if (isset($u['table']['schedule'])){
-                                       $r['schedule'] = $this->get_table(
-                                       		$u['table']['schedule']['data'],
-                                       		$u['table']['schedule']['header']
-                                       );
-                               }
+       	if (isset($u['table']['schedule'])){
+           $r['schedule'] = $this->get_table(
+           		$u['table']['schedule']['data'],
+           		$u['table']['schedule']['header']
+             );
+          }
+       	if (isset($u['table']['bookings'])){
+           $r['bookings'] = $this->get_table(
+           		$u['table']['bookings']['data'],
+           		$u['table']['bookings']['header']
+             );
+          }
 				if (isset($u['table']['rates']) && isset($u['table']['hidden'])){
 				 	$r['table'] = $this->get_render_rate_table(
 						$u['table']['rates'],

@@ -39,15 +39,31 @@ class ReservationController implements ReservationConcept {
 	public function get_controller( $parameters) {
 		$ret = array();
 		$db = new ReservationDBInterface();
+		$vars = 	array('res_resource_name',
+						'res_booking_units',
+	 					'res_beneficiary_name','res_booking_start','res_booking_end',
+						);
 		$bookings = $db->select(
-			array('res_booking','res_resource','res_beneficiary'), 
-			array('res_booking_units','res_booking_start','res_booking_end',
-						'res_beneficiary_name','res_resource_name')
+			array('res_booking','res_resource','res_unit','res_beneficiary'), 
+			$vars,
+			array(
+				'res_booking_beneficiary_id=res_beneficiary_id',
+				'res_booking_resource_id=res_resource_id',
+				'res_resource_unit_id=res_unit_id',
+				),
+			__METHOD__,
+			array( 'ORDER BY'=>array(
+				'res_resource_name','res_booking_start','res_booking_end',
+				'res_booking_units','res_beneficiary_name'
+				)
+			)
 			);
-		for ($i = 0, $ii = $bookings->numRows(); $i < $ii; $i++){
-			$ret[]=$bookings->fetchRow();
-		}
-		return $ret;
+		$result['output']['unrendered']['table']['bookings']['data'] = $bookings;
+		$result['output']['unrendered']['table']['bookings']['key'] = $vars;
+		$result['output']['unrendered']['table']['bookings']['header'] = array(
+			'Resource','Units','For','Start','Stop',
+		);
+		return $result;
 	}
 
 

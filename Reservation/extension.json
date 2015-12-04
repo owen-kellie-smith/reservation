@@ -9,8 +9,11 @@
 	"license-name": "MIT",
 	"type": "other",
 	"AutoloadClasses": {
+		"PEAR": "PEAR/PEAR.php",
 		"HTML_QuickForm2": "PEAR/HTML/QuickForm2.php",
+  		"HTML_Table_Storage": "PEAR/HTML/Table/Storage.php",
   		"HTML_Table": "PEAR/HTML/Table.php",
+  		"HTML_Common": "PEAR/HTML/Common.php",
 		"Validate": "PEAR/Validate.php",
 		"SpecialReservation": "specials/SpecialReservation.php",
 		"ReservationConcept":	"includes/ReservationConcept.php",

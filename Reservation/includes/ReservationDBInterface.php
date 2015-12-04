@@ -52,13 +52,17 @@ class ReservationDBInterface {
 		$conds='', $fname = __METHOD__, 
 		$options=array(), $join_conds=array() ){
 		$dbr = wfGetDB( DB_SLAVE );
-		return $dbr->select 	( 	  	$table,
+		$res = $dbr->select 	( 	  	$table,
 		  	$vars,
 		  	$conds,
 		  	$fname,
 		  	$options,
 		  	$join_conds 
-		); 		
+		); 
+		for ($i = 0, $ii = $res->numRows(); $i < $ii; $i++){
+			$ret[]=$res->fetchRow();
+		}		
+		return $ret;
 	}
 
 	public function update( $table, $values, $conds, 

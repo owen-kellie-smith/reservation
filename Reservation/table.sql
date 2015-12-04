@@ -2,6 +2,7 @@ DROP table IF EXISTS res_unit;
 CREATE TABLE res_unit(
 	res_unit_id int not null auto_increment, 
 	res_unit_name varchar(100) not null,
+	res_unit_name_plural varchar(100) not null,
 	primary key (res_unit_id)  
 );
 

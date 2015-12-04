@@ -30,7 +30,7 @@
 
 class SpecialReservation extends SpecialPage {
 
-	private $showUglyDebugMessagesOnRenderedPage=true;
+	private $showUglyDebugMessagesOnRenderedPage=false;
 
 	public function __construct() {
 		parent::__construct( 'Reservation' );
@@ -88,6 +88,9 @@ class SpecialReservation extends SpecialPage {
 			);
 			if (isset($res['table'])){
             			$out->addHTML( $res['table'] );
+			}
+			if (isset($res['bookings'])){
+            			$out->addHTML( $res['bookings'] );
 			}
 			if (isset($res['forms'])){
 				foreach ($res['forms'] AS $_f){

@@ -1,7 +1,7 @@
 INSERT INTO 
-res_unit( res_unit_name ) 
+res_unit( res_unit_name, res_unit_name_plural ) 
 VALUES 
-( 'core' );
+( 'core', 'cores' );
 
 INSERT INTO 
 res_group( res_group_name ) 
@@ -50,9 +50,9 @@ res_booking(
 	res_booking_end
 )
 VALUES
-(1, 11, 1, now(), now()+1000),
+(2, 11, 1, now(), now()+1000),
 (1, 11, 1, now(), now()+10000),
-(1, 11, 3, now(), now()+100000),
+(2, 11, 3, now(), now()+100000),
 (1, 11, 3, now(), now()+1000000),
 (1, 11, 3, now(), now()+10000000)
 ;
