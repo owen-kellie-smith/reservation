@@ -208,7 +208,7 @@ public function get_rendered_result( $u=array(), $pageTitle='' ){
 	}
 
 	/**
-	 * Get (in form of string) html for form which has just one <select> element
+	 * Get (in form of string) html for form which has just <select> elements
 	 *
 	 * @param array $return form features
 	 * @return string
@@ -220,7 +220,7 @@ public function get_rendered_result( $u=array(), $pageTitle='' ){
 		if ( !empty( $return['introduction'] ) ){
 			$out = "<p>" . $return['introduction'] . "</p>" . "\r\n";
 		}
-		foreach (array('name','method','action','select-name','select-label','select-options','submit') as $key){
+		foreach (array('name','method','action','select','submit') as $key){
 			$temp[$key]='';
 			if ( isset( $return[$key] ) ){
 				$temp[$key] = $return[$key];
@@ -229,9 +229,11 @@ public function get_rendered_result( $u=array(), $pageTitle='' ){
 		$return = $temp; $temp=null;
 			$form = new HTML_QuickForm2($return['name'],$return['method'], $return['action']);
 			$fieldset = $form->addElement('fieldset');
-			$calculator = $fieldset->addSelect( $return['select-name'] )
-				->setLabel( $return['select-label'] )
-				->loadOptions( $return['select-options']);
+      foreach ($return['select'] as $s){
+				$calculator = $fieldset->addSelect( $s['select-name'] )
+					->setLabel( $s['select-label'] )
+					->loadOptions( $s['select-options']);
+			}
 			$temp_page_id='';
 			if( isset($return['page_id'])){
 				$temp_page_id = $return['page_id'];

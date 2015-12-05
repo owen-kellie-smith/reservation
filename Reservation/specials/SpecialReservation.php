@@ -40,7 +40,7 @@ foreach ( array( '',
 
 class SpecialReservation extends SpecialPage {
 
-	private $showUglyDebugMessagesOnRenderedPage=false;
+	private $showUglyDebugMessagesOnRenderedPage=true;
 
 	public function __construct() {
 		parent::__construct( 'Reservation' );
@@ -60,7 +60,8 @@ class SpecialReservation extends SpecialPage {
 
 	private function getResult(){
 		$m = new ReservationController();
-		return $m->get_controller($this->getRequest()->getQueryValues()) ; 
+		$m->processPost($this->getRequest()->getValues());
+		return $m->get_controller($this->getRequest()->getValues()) ; 
 	}
 
 	private function outputGreetings( &$out ){
@@ -71,14 +72,23 @@ class SpecialReservation extends SpecialPage {
 
 	private function outputDebugMessagesIfRequired( &$out, $result ){
 		if ($this->showUglyDebugMessagesOnRenderedPage){
+			$out->addHTML( "getVaues is <pre> " . 
+				print_r($this->getRequest()->getValues(), 1) . "</pre>" 
+			);
 			$out->addHTML( "getQueryVaues is <pre> " . 
 				print_r($this->getRequest()->getQueryValues(), 1) . "</pre>" 
 			);
-			if (isset($result['output']['unrendered']['table'])){
-				$out->addHTML( "result output unrendered table is <pre> " . 
-					print_r($result['output']['unrendered']['table'], 1) . "</pre>" 
-				);
-			}
+			$out->addHTML( "getRawPostString is <pre> " . 
+				print_r($this->getRequest()->getRawPostString(), 1) . "</pre>" 
+			);
+			$out->addHTML( "getArray POST <pre> " . 
+				print_r($this->getRequest()->getArray('POST'), 1) . "</pre>" 
+			);
+/*
+			$out->addHTML( "result is <pre> " . 
+				print_r($result, 1) . "</pre>" 
+			);
+*/
 		}
 	}
 

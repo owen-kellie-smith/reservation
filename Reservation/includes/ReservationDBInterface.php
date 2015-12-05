@@ -37,7 +37,7 @@ class ReservationDBInterface {
 		;
 	}
 
-	public function insert( $values, $table, $a,
+	public function insert( $table, $a,
 		$fname = __METHOD__, $options=array() ){
 		$dbr = wfGetDB( DB_MASTER );
 		return $dbr->insert( 	  	$table,
