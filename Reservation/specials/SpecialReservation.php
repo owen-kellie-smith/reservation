@@ -28,6 +28,16 @@
  *
  */
 
+$_dir = "";
+foreach ( array( '',
+        '/includes/',
+        '/PEAR/',
+        '/PEAR/HTML/',
+        '/PEAR/HTML/QuickForm2',
+        ) AS $path ){
+        set_include_path(get_include_path(). PATH_SEPARATOR. dirname( dirname(__FILE__)). "/". $_dir. $path );
+}
+
 class SpecialReservation extends SpecialPage {
 
 	private $showUglyDebugMessagesOnRenderedPage=false;
@@ -84,18 +94,15 @@ class SpecialReservation extends SpecialPage {
 				$u = $result['output']['unrendered'];
 			}
 			$res = $render->get_rendered_result( 
-				$u, $this->getSkin()->getTitle()->getLinkUrl() 
+				$u, ''
 			);
-			if (isset($res['table'])){
-            			$out->addHTML( $res['table'] );
-			}
-			if (isset($res['bookings'])){
-            			$out->addHTML( $res['bookings'] );
-			}
 			if (isset($res['forms'])){
 				foreach ($res['forms'] AS $_f){
 						$out->addHTML( $_f ); 
 				}
+			}
+			if (isset($res['bookings'])){
+            			$out->addHTML( $res['bookings'] );
 			}
 		}
 		return;

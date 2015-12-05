@@ -25,8 +25,8 @@ INSERT INTO
 res_beneficiary(	res_beneficiary_name ) 
 VALUES 
 ('Owen'),
-('Marco'),
 ('Mei'),
+('Marco'),
 ('Will S' )
 ;
 
@@ -50,11 +50,13 @@ res_booking(
 	res_booking_end
 )
 VALUES
-(2, 11, 1, now(), now()+1000),
-(1, 11, 1, now(), now()+10000),
-(2, 11, 3, now(), now()+100000),
-(1, 11, 3, now(), now()+1000000),
-(1, 11, 3, now(), now()+10000000)
+(2, 12, 1, now()-10000, now()+1000),
+(2, 13, 1, now(), now()+1000),
+(1, 14, 1, now(), now()+10000),
+(2, 15, 3, now(), now()+100000),
+(1, 16, 3, now(), now()+1000000),
+(1, 17, 3, now(), now()+10000000),
+(1, 18, 3, now()+1000000, now()+20000000)
 ;
 
 INSERT INTO 

@@ -46,6 +46,7 @@ function Reservation_autoloader($class, $file){
 // if class A requires class B then put the Reservation_autoloader call to class A below the call to class B
 Reservation_autoloader("HTML_QuickForm2",$_dir . "/PEAR/HTML/QuickForm2.php");
 Reservation_autoloader("Validate", $_dir  . "/PEAR/Validate.php");
+Reservation_autoloader(  		"HTML_Common", "PEAR/HTML/Common.php");
 Reservation_autoloader(  		"HTML_Table", "PEAR/HTML/Table.php");
 Reservation_autoloader(		"Validate", "PEAR/Validate.php");
 Reservation_autoloader(		"ReservationObject", "includes/ReservationObject.php");

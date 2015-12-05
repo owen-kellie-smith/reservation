@@ -29,8 +29,7 @@
  * ReservationDBInterface is a class used to access the underlying data.
  *
  * It assumes you have stored your data in the wiki database.
- * If you decide to store your data in some other format then you can just change this
- * file.
+ * It's not as flexible as it looks, though, becasue the accessing select queries assume MySQL.
  */
 class ReservationDBInterface {
 

@@ -33,16 +33,39 @@
 class ReservationController implements ReservationConcept {
 
 
+	private $blankTime = "";
+	private $dateFormat = "%H:%i %W %e %b %y";
+
+	protected static function myMessage( $messageKey){
+		$m = $messageKey;
+		if ( function_exists('wfMessage') ){
+			if (null == wfMessage( $messageKey)->text()){
+				return $messageKey;
+			} else {
+				$m=wfMessage( $messageKey)->text();
+			}
+		}
+		return $m;
+	}
+
+
 	public function __construct(){
 	}
 
 	public function get_controller( $parameters) {
 		$ret = array();
 		$db = new ReservationDBInterface();
-		$vars = 	array('res_resource_name',
-						'res_booking_units',
-	 					'res_beneficiary_name','res_booking_start','res_booking_end',
-						);
+		$vars = array(
+			'res_resource_name',
+			'res_booking_units',
+	 		'res_beneficiary_name',	
+			'res_booking_startF'=>
+				'IF( res_booking_start > now(),
+					DATE_FORMAT(res_booking_start, "' . $this->dateFormat . '"),"' . 
+					$this->blankTime . '")',
+			'res_booking_endF'=>
+				'DATE_FORMAT(res_booking_end, "' . $this->dateFormat . '")',
+			);
 		$bookings = $db->select(
 			array('res_booking','res_resource','res_unit','res_beneficiary'), 
 			$vars,
@@ -50,23 +73,37 @@ class ReservationController implements ReservationConcept {
 				'res_booking_beneficiary_id=res_beneficiary_id',
 				'res_booking_resource_id=res_resource_id',
 				'res_resource_unit_id=res_unit_id',
+				'res_booking_end > now()',
 				),
 			__METHOD__,
 			array( 'ORDER BY'=>array(
-				'res_resource_name','res_booking_start','res_booking_end',
+				'res_resource_name','IF(res_booking_start<now(),-999,res_booking_start)','res_booking_end',
 				'res_booking_units','res_beneficiary_name'
 				)
 			)
 			);
 		$result['output']['unrendered']['table']['bookings']['data'] = $bookings;
-		$result['output']['unrendered']['table']['bookings']['key'] = $vars;
 		$result['output']['unrendered']['table']['bookings']['header'] = array(
 			'Resource','Units','For','Start','Stop',
+		);
+	  $result['output']['unrendered']['forms'][] = array(
+			'content'=> $this->get_calculator( NULL ),
+			'type'=>  'select'
 		);
 		return $result;
 	}
 
+  private function get_concept_labels(){
+		return array( 'a','b','c');
+	}
 
+	protected function get_calculator( $unused ){
+		$p = array('method'=> 'GET', 'submit'=>self::myMessage(  'reservation-get-calculator') , self::myMessage(  'reservation-select-calculator'));
+		$p['select-options'] = $this->get_concept_labels() ;
+		$p['select-name'] = 'concept';
+		$p['select-label'] = self::myMessage(  'fm-select-calculator');
+		return $p;
+	}
 }
 
 

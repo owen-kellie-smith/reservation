@@ -6,10 +6,5 @@
 	"reservation-desc": "This extension provides a form for booking scarce resources",
 	"reservation-helloworld": "Reservation Form",
 	"reservation-helloworld-intro": "Welcome to the Reservation Form",
-	"fm-error-in" : "in",
-  "fm-error-invalid-object":"Object of class $1 can't be added to collection of class $2",
-  "fm-error-no-output" : "Error: No output - try changing parameters.",
-  "fm-error-xml" : "Error: Try changing XML.  Cannot create xml from ",
-	"fm-verification" : "Verification",
 	"zzzzzzz":"If you can see me then something is wrong"
 }
