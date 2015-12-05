@@ -32,7 +32,9 @@
  */
 class ReservationController implements ReservationConcept {
 
-
+	private $maxBookingDurationInHours = 168;
+	private $maxBookingDeferralInDays = 60;
+	
 	private $blankTime = "";
 	private $dateFormat = "%H:%i %W %e %b %y";
 	private function secondsFromHours( $s ){
@@ -62,6 +64,7 @@ class ReservationController implements ReservationConcept {
 			isset( $p['beneficiary'] ) &&
 			isset( $p['quantity'] ) &&
 			isset( $p['duration'] ) &&
+			isset( $p['deferral'] ) &&
 			isset( $p['order'] )
 		){
 			if ( 'add_booking' == $p['order'] ){
@@ -71,8 +74,8 @@ class ReservationController implements ReservationConcept {
 				'res_booking_resource_id'=>$parameters['resource'],
 				'res_booking_beneficiary_id'=>$parameters['beneficiary'],
 				'res_booking_units'=>$parameters['quantity'],
-				'res_booking_start'=>date("Y-m-d H:i:s", time()),
-				'res_booking_end'=>date("Y-m-d H:i:s", time()+$this->secondsFromHours($parameters['duration'])),
+				'res_booking_start'=>date("Y-m-d H:i:s", time() + $this->secondsFromHours( $parameters['deferral']) ),
+				'res_booking_end'=>date("Y-m-d H:i:s", time()+$this->secondsFromHours($parameters['deferral'] + $parameters['duration'])),
 				);
 				return $db->insert( $table, $values );
 			} else {
@@ -155,7 +158,7 @@ class ReservationController implements ReservationConcept {
 		if (count($ret)>0){
 			$rsort = array();
 				for ($i=0, $ii=count($ret); $i < $ii; $i++){
-					$rsort[$ret[$i]['res_resource_id']]=$ret[$i]['res_resource_name'];
+					$rsort[$ret[$i]['res_resource_id']]=" " . $ret[$i]['res_resource_name'];
 				}
 		}
 		return $rsort;
@@ -164,15 +167,23 @@ class ReservationController implements ReservationConcept {
   private function get_quantity_labels(){
 			$rsort = array();
 				for ($i=0, $ii=$this->get_max_units(); $i < $ii; $i++){
-					$rsort[strval($i+1)]=$i+1;
+					$rsort[strval($i+1)]=" " . $i+1 . " " . (0==$i ? 'core' : 'cores');
 				}
 		return $rsort;
 	}
 
   private function get_duration_labels(){
 			$rsort = array();
-				for ($i=0, $ii=100; $i < $ii; $i++){
-					$rsort[strval(($i+1.0)/2)]=($i+1.0)/2;
+				for ($i=0, $ii=2 * $this->maxBookingDurationInHours; $i < $ii; $i++){
+					$rsort[strval(($i+1.0)/2)]=" required for " . ($i+1.0)/2 . " " . (1==$i ? 'hour' : 'hours');
+				}
+		return $rsort;
+	}
+
+  private function get_deferral_labels(){
+			$rsort = array();
+				for ($i=0, $ii=24 * $this->maxBookingDeferralInDays; $i < $ii; $i++){
+					$rsort[strval(($i))]=" starting " . (0==$i ? 'immediately' : 'in ' . $i . " " .(1==$i ? "hour" : "hours"));
 				}
 		return $rsort;
 	}
@@ -198,14 +209,14 @@ class ReservationController implements ReservationConcept {
 		if (count($ret)>0){
 			$rsort = array();
 				for ($i=0, $ii=count($ret); $i < $ii; $i++){
-					$rsort[$ret[$i]['res_beneficiary_id']]=$ret[$i]['res_beneficiary_name'];
+					$rsort[$ret[$i]['res_beneficiary_id']]="for " .$ret[$i]['res_beneficiary_name'];
 				}
 		}
 		return $rsort;
 	}
 
 	protected function get_booking_form( $unused ){
-		$p = array('method'=> 'POST', 'submit'=>self::myMessage(  'reservation-post-booking') , self::myMessage(  'reservation-post-booking'));
+		$p = array('method'=> 'POST', 'submit'=>self::myMessage(  'Post new booking') , self::myMessage(  'reservation-post-booking'));
 		$p['select'][0]['select-options'] = $this->get_resource_labels() ;
 		$p['select'][0]['select-name'] = 'resource';
 		$p['select'][0]['select-label'] = self::myMessage(  'res-select-resource');
@@ -218,7 +229,11 @@ class ReservationController implements ReservationConcept {
 		$p['select'][3]['select-options'] = $this->get_duration_labels() ;
 		$p['select'][3]['select-name'] = 'duration';
 		$p['select'][3]['select-label'] = self::myMessage(  'res-select-duration');
+		$p['select'][4]['select-options'] = $this->get_deferral_labels() ;
+		$p['select'][4]['select-name'] = 'deferral';
+		$p['select'][4]['select-label'] = self::myMessage(  'res-select-deferral');
 		$p['order'] = 'add_booking';
+		$p['formLabel'] = 'New booking';
 		return $p;
 	}
 }

@@ -67,7 +67,7 @@ class SpecialReservation extends SpecialPage {
 	private function outputGreetings( &$out ){
 		$out->setPageTitle( $this->msg( 'reservation-helloworld' ) );
 		$out->addWikiMsg( 'reservation-helloworld-intro' );
-		$out->addHTML( $this->restartForm() );
+//		$out->addHTML( $this->restartForm() );
 	}
 
 	private function outputDebugMessagesIfRequired( &$out, $result ){
@@ -75,6 +75,7 @@ class SpecialReservation extends SpecialPage {
 			$out->addHTML( "getVaues is <pre> " . 
 				print_r($this->getRequest()->getValues(), 1) . "</pre>" 
 			);
+/*
 			$out->addHTML( "getQueryVaues is <pre> " . 
 				print_r($this->getRequest()->getQueryValues(), 1) . "</pre>" 
 			);
@@ -84,6 +85,7 @@ class SpecialReservation extends SpecialPage {
 			$out->addHTML( "getArray POST <pre> " . 
 				print_r($this->getRequest()->getArray('POST'), 1) . "</pre>" 
 			);
+*/
 /*
 			$out->addHTML( "result is <pre> " . 
 				print_r($result, 1) . "</pre>" 
