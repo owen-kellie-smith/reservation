@@ -57,16 +57,28 @@ class ReservationController implements ReservationConcept {
 	}
 
 	public function processPost( $parameters) {
-		$db = new ReservationDBInterface();
-		$table="res_booking";
-		$values=array(
-		'res_booking_resource_id'=>$parameters['resource'],
-		'res_booking_beneficiary_id'=>$parameters['beneficiary'],
-		'res_booking_units'=>$parameters['quantity'],
-		'res_booking_start'=>date("Y-m-d H:i:s", time()),
-		'res_booking_end'=>date("Y-m-d H:i:s", time()+$this->secondsFromHours($parameters['duration'])),
-		);
-		return $db->insert( $table, $values );
+		$p = $parameters;
+		if( isset( $p['resource'] ) &&
+			isset( $p['beneficiary'] ) &&
+			isset( $p['quantity'] ) &&
+			isset( $p['duration'] ) &&
+			isset( $p['order'] )
+		){
+			if ( 'add_booking' == $p['order'] ){
+				$db = new ReservationDBInterface();
+				$table="res_booking";
+				$values=array(
+				'res_booking_resource_id'=>$parameters['resource'],
+				'res_booking_beneficiary_id'=>$parameters['beneficiary'],
+				'res_booking_units'=>$parameters['quantity'],
+				'res_booking_start'=>date("Y-m-d H:i:s", time()),
+				'res_booking_end'=>date("Y-m-d H:i:s", time()+$this->secondsFromHours($parameters['duration'])),
+				);
+				return $db->insert( $table, $values );
+			} else {
+				return;
+			}
+		}
 	}
 
 	public function get_controller( $parameters) {
@@ -94,7 +106,7 @@ class ReservationController implements ReservationConcept {
 				),
 			__METHOD__,
 			array( 'ORDER BY'=>array(
-				'res_resource_name','IF(res_booking_start<now(),-999,res_booking_start)','res_booking_end',
+				'res_resource_name','res_booking_end',
 				'res_booking_units','res_beneficiary_name'
 				)
 			)
@@ -206,6 +218,7 @@ class ReservationController implements ReservationConcept {
 		$p['select'][3]['select-options'] = $this->get_duration_labels() ;
 		$p['select'][3]['select-name'] = 'duration';
 		$p['select'][3]['select-label'] = self::myMessage(  'res-select-duration');
+		$p['order'] = 'add_booking';
 		return $p;
 	}
 }

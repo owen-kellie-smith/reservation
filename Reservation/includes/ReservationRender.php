@@ -220,7 +220,7 @@ public function get_rendered_result( $u=array(), $pageTitle='' ){
 		if ( !empty( $return['introduction'] ) ){
 			$out = "<p>" . $return['introduction'] . "</p>" . "\r\n";
 		}
-		foreach (array('name','method','action','select','submit') as $key){
+		foreach (array('name','method','action','select','submit', 'order') as $key){
 			$temp[$key]='';
 			if ( isset( $return[$key] ) ){
 				$temp[$key] = $return[$key];
@@ -229,7 +229,7 @@ public function get_rendered_result( $u=array(), $pageTitle='' ){
 		$return = $temp; $temp=null;
 			$form = new HTML_QuickForm2($return['name'],$return['method'], $return['action']);
 			$fieldset = $form->addElement('fieldset');
-      foreach ($return['select'] as $s){
+      			foreach ($return['select'] as $s){
 				$calculator = $fieldset->addSelect( $s['select-name'] )
 					->setLabel( $s['select-label'] )
 					->loadOptions( $s['select-options']);
@@ -239,6 +239,9 @@ public function get_rendered_result( $u=array(), $pageTitle='' ){
 				$temp_page_id = $return['page_id'];
 			}
 			$fieldset->addElement('hidden', 'page_id')->setValue($temp_page_id);
+			if ( isset( $return['order'] ) ){
+				$fieldset->addElement('hidden', 'order')->setValue($return['order']);
+			}
 			$temp_page_id= null;
 			$fieldset->addElement('submit', null, array('value' => $return['submit']));
 			$out.= $form;
