@@ -28,6 +28,7 @@
 
 class ReservationRender  {
 
+private $fillerForEmptyCell = "";
 
 public function __construct(ReservationObject $obj=null){
 	$this->eqref=(int)mt_rand();
@@ -189,10 +190,14 @@ public function get_rendered_result( $u=array(), $pageTitle='' ){
 			for ($i =0, $ii = count( $column_headers ); $i < $ii; $i++ ){
 				if (isset($row_data[$nr][$i] )){
 					if ('' != $row_data[$nr][$i] ){
-						$table->setCellContents( $nr+1, $i, $row_data[$nr][$i] );
+						if (5 == $i){
+							$table->setCellContents( $nr+1, $i,  $this->getDeleteButton( $row_data[$nr][$i], 'booking_id') );
+						} else {
+							$table->setCellContents( $nr+1, $i, $row_data[$nr][$i] );
+						}
 					}
 				} else {
-					$table->setCellContents( $nr+1, $i, 'n/a' );
+					$table->setCellContents( $nr+1, $i, $this->fillerForEmptyCell );
 				}
 			}
 		}
@@ -363,6 +368,14 @@ public function get_rendered_result( $u=array(), $pageTitle='' ){
 		}
 	}
 
+	private function getDeleteButton( $id, $fieldName ){
+		$form = new HTML_QuickForm2('DeleteButton', 'post', array(
+    'action' => $_SERVER['PHP_SELF']));
+		$form->addElement('hidden', $fieldName)->setValue($id);
+		$form->addElement('hidden', 'order')->setValue('cancel_booking');
+		$form->addElement('submit', null, array('value' => 'Cancel'));
+		return $form;
+	}
 
 
 

@@ -32,8 +32,10 @@
  */
 class ReservationController implements ReservationConcept {
 
-	private $maxBookingDurationInHours = 168;
-	private $maxBookingDeferralInDays = 60;
+
+	private $maxBookingDurationInHours = 168;
+
+	private $maxBookingDeferralInDays = 60;
 	
 	private $blankTime = "";
 	private $dateFormat = "%H:%i %W %e %b %y";
@@ -60,26 +62,36 @@ class ReservationController implements ReservationConcept {
 
 	public function processPost( $parameters) {
 		$p = $parameters;
-		if( isset( $p['resource'] ) &&
-			isset( $p['beneficiary'] ) &&
-			isset( $p['quantity'] ) &&
-			isset( $p['duration'] ) &&
-			isset( $p['deferral'] ) &&
-			isset( $p['order'] )
-		){
-			if ( 'add_booking' == $p['order'] ){
+		if( isset( $p['order'] )){
+			if ( 'add_booking' == $p['order'] && 
+				isset( $p['resource'] ) &&
+				isset( $p['beneficiary'] ) &&
+				isset( $p['quantity'] ) &&
+				isset( $p['duration'] ) &&
+				isset( $p['deferral'] ) 
+			){
+				if ($this->get_available_capacity( 
+				$p['resource'], $p['duration'], $p['deferral'] ) >=
+				$p['quantity']) {
+					$db = new ReservationDBInterface();
+					$table="res_booking";
+					$values=array(
+					'res_booking_resource_id'=>$parameters['resource'],
+					'res_booking_beneficiary_id'=>$parameters['beneficiary'],
+					'res_booking_units'=>$parameters['quantity'],
+					'res_booking_start'=>date("Y-m-d H:i:s", time() + $this->secondsFromHours( $parameters['deferral']) ),
+					'res_booking_end'=>date("Y-m-d H:i:s", time()+$this->secondsFromHours($parameters['deferral'] + $parameters['duration'])),
+					);
+					return $db->insert( $table, $values );
+				}
+			} else if ( 'cancel_booking' == $p['order'] &&
+				isset( $p['booking_id'] ) 
+			){
 				$db = new ReservationDBInterface();
 				$table="res_booking";
-				$values=array(
-				'res_booking_resource_id'=>$parameters['resource'],
-				'res_booking_beneficiary_id'=>$parameters['beneficiary'],
-				'res_booking_units'=>$parameters['quantity'],
-				'res_booking_start'=>date("Y-m-d H:i:s", time() + $this->secondsFromHours( $parameters['deferral']) ),
-				'res_booking_end'=>date("Y-m-d H:i:s", time()+$this->secondsFromHours($parameters['deferral'] + $parameters['duration'])),
-				);
-				return $db->insert( $table, $values );
-			} else {
-				return;
+				$values=array( 'res_booking_end'=>date("Y-m-d H:i:s", time()));
+				$cond = array( 'res_booking_id'=> $p['booking_id'] );
+				return $db->update( $table, $values, $cond );
 			}
 		}
 	}
@@ -97,6 +109,7 @@ class ReservationController implements ReservationConcept {
 					$this->blankTime . '")',
 			'res_booking_endF'=>
 				'DATE_FORMAT(res_booking_end, "' . $this->dateFormat . '")',
+			'res_booking_id'
 			);
 		$bookings = $db->select(
 			array('res_booking','res_resource','res_unit','res_beneficiary'), 
@@ -116,13 +129,58 @@ class ReservationController implements ReservationConcept {
 			);
 		$result['output']['unrendered']['table']['bookings']['data'] = $bookings;
 		$result['output']['unrendered']['table']['bookings']['header'] = array(
-			'Resource','Units','For','Start','Stop',
+			'Resource','Units','For','Start','Stop','Cancel',
 		);
 	  $result['output']['unrendered']['forms'][] = array(
 			'content'=> $this->get_booking_form( NULL ),
 			'type'=>'select',
 			);
 		return $result;
+	}
+
+	private function get_available_capacity( $resource_id, $duration, $deferral ) {
+		return max(0, $this->get_max_capacity( $resource_id ) -  
+			$this->get_commited_units( $resource_id, $duration, $deferral ));
+	}
+
+	private function get_max_capacity( $resource_id ) {
+		$ret = array();
+		$db = new ReservationDBInterface();
+		$vars = array(
+			'capacity'=>'sum(res_resource_capacity)',
+			);
+		$res = $db->select(
+			array('res_resource'), 
+			$vars,
+			array(
+				'res_resource_id' => $resource_id,
+				)
+			);
+		$max_capacity = $res[0]['capacity'];
+//		print_r($max_capacity);
+		return $max_capacity;
+	}
+
+	private function get_commited_units( $resource_id, $duration, $deferral ) {
+		$upperLimit = date("Y-m-d H:i:s", time() + $this->secondsFromHours( $duration + $deferral ));
+		$lowerLimit = date("Y-m-d H:i:s", time()+$this->secondsFromHours( $deferral ));
+
+		$ret = array();
+		$db = new ReservationDBInterface();
+		$vars = array(
+			'committed'=>'sum(res_booking_units)',
+			);
+		$res = $db->select(
+			array('res_booking'), 
+			$vars,
+			array(
+				"res_booking_start < '" . $upperLimit . "'",
+				"res_booking_end > '" . $lowerLimit . "'",
+				'res_booking_resource_id' => $resource_id,
+				)
+			);
+		$c = $res[0]['committed'];
+		return $c;
 	}
 
   private function get_max_units(){

@@ -50,6 +50,7 @@ class ReservationDBInterface {
 	public function select( $table, $vars, 
 		$conds='', $fname = __METHOD__, 
 		$options=array(), $join_conds=array() ){
+		$ret = array();
 		$dbr = wfGetDB( DB_SLAVE );
 		$res = $dbr->select 	( 	  	$table,
 		  	$vars,

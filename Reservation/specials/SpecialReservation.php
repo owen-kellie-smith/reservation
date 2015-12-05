@@ -40,7 +40,7 @@ foreach ( array( '',
 
 class SpecialReservation extends SpecialPage {
 
-	private $showUglyDebugMessagesOnRenderedPage=true;
+	private $showUglyDebugMessagesOnRenderedPage=false;
 
 	public function __construct() {
 		parent::__construct( 'Reservation' );
@@ -66,7 +66,7 @@ class SpecialReservation extends SpecialPage {
 
 	private function outputGreetings( &$out ){
 		$out->setPageTitle( $this->msg( 'reservation-helloworld' ) );
-		$out->addWikiMsg( 'reservation-helloworld-intro' );
+//		$out->addWikiMsg( 'reservation-helloworld-intro' );
 //		$out->addHTML( $this->restartForm() );
 	}
 

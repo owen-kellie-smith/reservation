@@ -25,6 +25,7 @@
 		"ReservationCollection": "includes/ReservationCollection.php",
 		"ReservationDBInterface": "includes/ReservationDBInterface.php",
 		"ReservationForm": "includes/ReservationForm.php",
+		"ReservationHooks": "Reservation.hooks.php",
 		"ReservationXML": "includes/ReservationXML.php",
 		"ReservationFormXML": "includes/ReservationFormXML.php",
 		"ReservationObject": "includes/ReservationObject.php",
@@ -34,7 +35,7 @@
 		"ReservationAlias": "Reservation.i18n.alias.php"
 	},
 	"Hooks": {
-		"LoadExtensionSchemaUpdate": [
+		"LoadExtensionSchemaUpdates": [
 			"ReservationHooks::mySchemaUpdate"
 		]
 	},
