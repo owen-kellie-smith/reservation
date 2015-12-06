@@ -72,6 +72,10 @@ class ReservationController  {
 				)
 			)
 			);
+		$result['output']['unrendered']['table']['immediate']['data'] = $this->getImmediateCapacity();
+		$result['output']['unrendered']['table']['immediate']['header'] = array(
+			'Resource','Cores','Duration (hours), starting at ' . date("Y-m-d H:i", time() )  
+		);
 		$result['output']['unrendered']['table']['bookings']['data'] = $bookings;
 		$result['output']['unrendered']['table']['bookings']['header'] = array(
 			'Resource','Units','For','Start','Stop','Cancel',
@@ -93,9 +97,9 @@ class ReservationController  {
 				isset( $p['duration'] ) &&
 				isset( $p['deferral'] ) 
 			){
-				if ($this->get_available_capacity( 
-				$p['resource'], $p['duration'], $p['deferral'] ) >=
-				$p['quantity']) {
+				$available = $this->get_available_capacity( 
+					$p['resource'], $p['duration'], $p['deferral'] );
+				if ($available  >= $p['quantity']) {
 					$db = new ReservationDBInterface();
 					$table="res_booking";
 					$values=array(
@@ -107,13 +111,14 @@ class ReservationController  {
 					);
 					return $db->insert( $table, $values );
 				} else {
-					$message = "Could not make requested booking.";
-					$message .=  "  The most you can book on " . $this->getResourceName($p['resource']) . " from " . date("Y-m-d H:i:s", time() + $this->secondsFromHours( $p['deferral']) );
-					$message .=  " to " . date("Y-m-d H:i:s", time() + $this->secondsFromHours( $p['deferral']  + $p['duration'] ) );
-					$message .=  " is " . $this->get_available_capacity( 
-				$p['resource'], $p['duration'], $p['deferral'] ); 
-					$message .=  "." ;
-
+					$message = "Could not make requested booking. ";
+					$message .= $this->capacityMessage( $p['resource'], $p['deferral'], $p['duration'], $available);
+					$alternative = $this->getAlternativeCapacity( $p['duration'], $p['deferral'], $available );
+					if ( isset( $alternative['resource'] ) && isset( $alternative['capacity'] ) ){
+						$message .= $this->capacityMessage( $alternative['resource'], $p['deferral'], $p['duration'], $alternative['capacity']);
+					}
+					$alternative = null;
+					$available = null;
 					$this->messages[] = array( 'type'=>'warning','message'=>$message ) ;
 					$message = null;
 				}
@@ -127,6 +132,18 @@ class ReservationController  {
 				return $db->update( $table, $values, $cond );
 			}
 		}
+	}
+
+	private function capacityMessage( $resource_id, $deferral, $duration, $units ){
+		return 	"  The most you can book on " . 
+			$this->getResourceName($resource_id) . 
+			" from " . 
+			date("Y-m-d H:i:s", time() + $this->secondsFromHours( $deferral) ) . 
+			" to " . 
+			date("Y-m-d H:i:s", time() + $this->secondsFromHours( $deferral  + $duration ) ) . 
+			" is " . 
+			$units . 
+			". ";
 	}
 
 	private static function myMessage( $messageKey){
@@ -145,9 +162,45 @@ class ReservationController  {
 		return $s * 60 * 60.0;
 	}
 
+	private function getAlternativeCapacity( $duration, $deferral, $capacity ){
+		$ret = array();
+		$capOld = $capacity;
+		$r = $this->getResourceLabels();
+		if ( count($r) > 0 ){
+			foreach ($r as $key=>$label){
+				$capNew = $this->get_available_capacity( $key, $duration, $deferral );
+				if ( $capNew > $capOld ){
+					$ret = array('resource'=>$key, 'capacity'=>$capNew);
+					$capOld = $capNew;
+				}
+				$capNew = null;
+			}
+		}
+		return $ret;
+	}
+
+	private function getImmediateCapacity(){
+		$ret = array();
+		$durs = array(0.5, 1.0, 2.0, 4.0, 8.0, 16.0);
+		foreach( $durs as $d ){
+			$a = $this->getAlternativeCapacity( $d, 0, 0 );
+			if ( isset( $a['resource'] ) ){
+				$a['resource_name'] = $this->getResourceName($a['resource']) ; 
+				unset( $a['resource'] );
+				$a[] = $a['resource_name'];
+				$a[] = $a['capacity'];
+			}
+			$a['duration'] = $d;
+			$a[] = $a['duration'];
+			$ret[] = $a;
+		}
+		return $ret;
+	}
+
 	private function get_available_capacity( $resource_id, $duration, $deferral ) {
-		return max(0, $this->get_max_capacity( $resource_id ) -  
-			$this->get_commited_units( $resource_id, $duration, $deferral ));
+		$cap = max(0, $this->get_max_capacity( $resource_id ) -  
+			$this->get_committed_units( $resource_id, $duration, $deferral ));
+		return $cap;
 	}
 
 	private function get_max_capacity( $resource_id ) {
@@ -184,7 +237,7 @@ class ReservationController  {
 		return $c;
 	}
 
-	private function get_commited_units( $resource_id, $duration, $deferral ) {
+	private function get_committed_units( $resource_id, $duration, $deferral ) {
 		$upperLimit = date("Y-m-d H:i:s", time() + $this->secondsFromHours( $duration + $deferral ));
 		$lowerLimit = date("Y-m-d H:i:s", time()+$this->secondsFromHours( $deferral ));
 
@@ -218,7 +271,7 @@ class ReservationController  {
 		return $res[0][0];
 	}
  
-  private function get_resource_labels(){
+  private function getResourceLabels(){
 		$ret = array();
 		$db = new ReservationDBInterface();
 		$vars = array(
@@ -298,7 +351,7 @@ class ReservationController  {
 
 	protected function get_booking_form( $unused ){
 		$p = array('method'=> 'POST', 'submit'=>self::myMessage(  'Post new booking') , self::myMessage(  'reservation-post-booking'));
-		$p['select'][0]['select-options'] = $this->get_resource_labels() ;
+		$p['select'][0]['select-options'] = $this->getResourceLabels() ;
 		$p['select'][0]['select-name'] = 'resource';
 		$p['select'][0]['select-label'] = self::myMessage(  'res-select-resource');
 		$p['select'][1]['select-options'] = $this->get_quantity_labels() ;

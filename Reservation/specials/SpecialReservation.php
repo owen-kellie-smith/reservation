@@ -102,6 +102,9 @@ class SpecialReservation extends SpecialPage {
 					$out->addHTML( $_f ); 
 			}
 		}
+		if (isset($res['immediate'])){
+            		$out->addHTML( $res['immediate'] );
+		}
 		if (isset($res['bookings'])){
             		$out->addHTML( $res['bookings'] );
 		}

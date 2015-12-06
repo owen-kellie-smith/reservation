@@ -58,6 +58,12 @@ public function get_rendered_result( $u=array(), $pageTitle='' ){
            		$u['table']['bookings']['header']
              );
           }
+       	if (isset($u['table']['immediate'])){
+           $r['immediate'] = $this->get_table(
+           		$u['table']['immediate']['data'],
+           		$u['table']['immediate']['header']
+             );
+          }
 				if (isset($u['table']['rates']) && isset($u['table']['hidden'])){
 				 	$r['table'] = $this->get_render_rate_table(
 						$u['table']['rates'],
