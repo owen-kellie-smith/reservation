@@ -85,7 +85,7 @@ class SpecialReservation extends SpecialPage {
 				foreach ( $res['warning']  AS $w ) {
 					if ( isset( $w['type'] )  && isset( $w['message'])   ){
 						if ( 'warning'== $w['type'] ){
-							$out->addHTML( "<span class='reservation-warning'>" . $w['message'] . "</span>" ) ;
+							$out->addHTML( "<span class='warning'>" . $w['message'] . "</span>" ) ;
 						}
 					}
 				}

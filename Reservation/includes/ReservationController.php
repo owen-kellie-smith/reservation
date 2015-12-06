@@ -125,7 +125,7 @@ class ReservationController  {
 		$result = array();
 		$result['data'] = $this->getImmediateCapacity();
 		$result['header'] = array(
-			'Resource','Cores','Duration (hours), starting at ' . date("Y-m-d H:i", time() )  
+			'Resource','Immediately available cores','Available for (hours), starting at ' . date("Y-m-d H:i", time() )  
 		);
 		return $result;
 	}
