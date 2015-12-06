@@ -21,11 +21,8 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- */
-/**
- * SpecialPage for Reservation extension
- * Hack of BoilerPlate
  *
+ * @file
  */
 
 $_dir = "";
@@ -46,22 +43,23 @@ class SpecialReservation extends SpecialPage {
 		parent::__construct( 'Reservation' );
 	}
 
-	public function execute( $sub ) {
-		$out = $this->getOutput();
-		$this->outputGreetings( $out );
-		$result = $this->getResult();
-		$this->outputDebugMessagesIfRequired( $out, $result );
-		$this->outputResult( $out, $result );
+	public function execute( $unused ) {
+		$this->displayPage( $this->getOutput(), $this->getReservations() );
 	}
 
 	protected function getGroupName() {
 		return 'other';
 	}
 
-	private function getResult(){
+	private function getReservations(){
 		$m = new ReservationController();
-		$m->processPost($this->getRequest()->getValues());
 		return $m->get_controller($this->getRequest()->getValues()) ; 
+	}
+
+	private function displayPage( $out, $res ){
+		$this->outputGreetings( $out );
+		$this->outputDebugMessagesIfRequired( $out, $res );
+		$this->outputReservations( $out, $res );
 	}
 
 	private function outputGreetings( &$out ){
@@ -72,58 +70,34 @@ class SpecialReservation extends SpecialPage {
 
 	private function outputDebugMessagesIfRequired( &$out, $result ){
 		if ($this->showUglyDebugMessagesOnRenderedPage){
-			$out->addHTML( "getVaues is <pre> " . 
+			$out->addHTML( "s->getRequest()->getValues(): <pre> " . 
 				print_r($this->getRequest()->getValues(), 1) . "</pre>" 
 			);
-/*
-			$out->addHTML( "getQueryVaues is <pre> " . 
-				print_r($this->getRequest()->getQueryValues(), 1) . "</pre>" 
-			);
-			$out->addHTML( "getRawPostString is <pre> " . 
-				print_r($this->getRequest()->getRawPostString(), 1) . "</pre>" 
-			);
-			$out->addHTML( "getArray POST <pre> " . 
-				print_r($this->getRequest()->getArray('POST'), 1) . "</pre>" 
-			);
-*/
-/*
-			$out->addHTML( "result is <pre> " . 
+			$out->addHTML( "result: <pre> " . 
 				print_r($result, 1) . "</pre>" 
 			);
-*/
 		}
 	}
 
-	private function outputResult( &$out, $result ){
-		$render = new ReservationRender();
-		if (isset($result['warning'])){
+	private function outputReservations( &$out, $res ){
+		if (isset($res['warning'])){
 			$out->addHTML( "<span class='reservation-warning'>" . 
-				$result['warning'] . "</span>"
+				$res['warning'] . "</span>"
 			);
-		} else {
-			$u = array();
-			if (isset($result['output']['unrendered'])){
-				$u = $result['output']['unrendered'];
-			}
+		}
+		$render = new ReservationRender();
+		if (isset($res['output']['unrendered'])){
 			$res = $render->get_rendered_result( 
-				$u, ''
+				$res['output']['unrendered'], ''
 			);
-			if (isset($res['forms'])){
-				foreach ($res['forms'] AS $_f){
-						$out->addHTML( $_f ); 
-				}
-			}
-			if (isset($res['bookings'])){
-            			$out->addHTML( $res['bookings'] );
+		}
+		if (isset($res['forms'])){
+			foreach ($res['forms'] AS $_f){
+					$out->addHTML( $_f ); 
 			}
 		}
-		return;
+		if (isset($res['bookings'])){
+            		$out->addHTML( $res['bookings'] );
+		}
 	}
-
-	private function restartForm(){
-		$_restart_label = wfMessage( 'reservation-restart')->text();
-		return '<form action="" method=GET><input type="submit" value="' . 
-			$_restart_label . '"></form>' ;
-	}
-
 }

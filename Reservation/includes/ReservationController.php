@@ -26,41 +26,64 @@
 
 /**
  *
- * ReservationController is for the form used to input and process
+ * ReservationController is used to input and process
  * requests about Reservation objects.
  *
  */
-class ReservationController implements ReservationConcept {
+class ReservationController  {
 
-
+	private $messages; 
 	private $maxBookingDurationInHours = 168;
-
 	private $maxBookingDeferralInDays = 60;
-	
 	private $blankTime = "";
 	private $dateFormat = "%H:%i %W %e %b %y";
-	private function secondsFromHours( $s ){
-		return $s * 60 * 60.0;
-	}
-
-	protected static function myMessage( $messageKey){
-		$m = $messageKey;
-		return $m;
-		if ( function_exists('wfMessage') ){
-			if ('' == wfMessage( $messageKey)->text()){
-				return $messageKey;
-			} else {
-				$m=wfMessage( $messageKey)->text();
-			}
-		}
-		return $m;
-	}
-
 
 	public function __construct(){
+		$this->messages = array();
+	}
+		
+	public function get_controller( $parameters) {
+		$this->processPost( $parameters );
+		$ret = array();
+		$db = new ReservationDBInterface();
+		$vars = array(
+			'res_resource_name',
+			'res_booking_units',
+	 		'res_beneficiary_name'=>'user_name',	
+			'res_booking_startF'=>
+				'DATE_FORMAT(res_booking_start, "' . $this->dateFormat . '")',
+			'res_booking_endF'=>
+				'DATE_FORMAT(res_booking_end, "' . $this->dateFormat . '")',
+			'res_booking_id'
+			);
+		$bookings = $db->select(
+			array('res_booking','res_resource','res_unit','user'), 
+			$vars,
+			array(
+				'res_booking_beneficiary_id=user_id',
+				'res_booking_resource_id=res_resource_id',
+				'res_resource_unit_id=res_unit_id',
+				'res_booking_end > now()',
+				),
+			__METHOD__,
+			array( 'ORDER BY'=>array(
+				'res_resource_name','res_booking_end',
+				'res_booking_units','res_beneficiary_name'
+				)
+			)
+			);
+		$result['output']['unrendered']['table']['bookings']['data'] = $bookings;
+		$result['output']['unrendered']['table']['bookings']['header'] = array(
+			'Resource','Units','For','Start','Stop','Cancel',
+		);
+	  $result['output']['unrendered']['forms'][] = array(
+			'content'=> $this->get_booking_form( NULL ),
+			'type'=>'select',
+			);
+		return $result;
 	}
 
-	public function processPost( $parameters) {
+	private function processPost( $parameters) {
 		$p = $parameters;
 		if( isset( $p['order'] )){
 			if ( 'add_booking' == $p['order'] && 
@@ -83,10 +106,20 @@ class ReservationController implements ReservationConcept {
 					'res_booking_end'=>date("Y-m-d H:i:s", time()+$this->secondsFromHours($parameters['deferral'] + $parameters['duration'])),
 					);
 					return $db->insert( $table, $values );
+				} else {
+					$message = "Could not make requested booking.";
+					$message .=  "Maximum capacity on " . $p['resource'] . " from " . date("Y-m-d H:i:s", time() + $this->secondsFromHours( $parameters['deferral']) );
+					$message .=  " to " . date("Y-m-d H:i:s", time() + $this->secondsFromHours( $parameters['deferral'])  + $parameters['duration'] );
+					$message .=  " is " . $this->get_available_capacity( 
+				$p['resource'], $p['duration'], $p['deferral'] ); 
+					$message .=  "." ;
+
+					$this->messages[] = array( 'type'=>'error','message'=>$message ) ;
+					$message = null;
 				}
 			} else if ( 'cancel_booking' == $p['order'] &&
 				isset( $p['booking_id'] ) 
-			){
+				){
 				$db = new ReservationDBInterface();
 				$table="res_booking";
 				$values=array( 'res_booking_end'=>date("Y-m-d H:i:s", time()));
@@ -96,46 +129,20 @@ class ReservationController implements ReservationConcept {
 		}
 	}
 
-	public function get_controller( $parameters) {
-		$ret = array();
-		$db = new ReservationDBInterface();
-		$vars = array(
-			'res_resource_name',
-			'res_booking_units',
-	 		'res_beneficiary_name',	
-			'res_booking_startF'=>
-				'IF( res_booking_start > now(),
-					DATE_FORMAT(res_booking_start, "' . $this->dateFormat . '"),"' . 
-					$this->blankTime . '")',
-			'res_booking_endF'=>
-				'DATE_FORMAT(res_booking_end, "' . $this->dateFormat . '")',
-			'res_booking_id'
-			);
-		$bookings = $db->select(
-			array('res_booking','res_resource','res_unit','res_beneficiary'), 
-			$vars,
-			array(
-				'res_booking_beneficiary_id=res_beneficiary_id',
-				'res_booking_resource_id=res_resource_id',
-				'res_resource_unit_id=res_unit_id',
-				'res_booking_end > now()',
-				),
-			__METHOD__,
-			array( 'ORDER BY'=>array(
-				'res_resource_name','res_booking_end',
-				'res_booking_units','res_beneficiary_name'
-				)
-			)
-			);
-		$result['output']['unrendered']['table']['bookings']['data'] = $bookings;
-		$result['output']['unrendered']['table']['bookings']['header'] = array(
-			'Resource','Units','For','Start','Stop','Cancel',
-		);
-	  $result['output']['unrendered']['forms'][] = array(
-			'content'=> $this->get_booking_form( NULL ),
-			'type'=>'select',
-			);
-		return $result;
+	private static function myMessage( $messageKey){
+		$m = $messageKey;
+		return $m;
+		if ( function_exists('wfMessage') ){
+			if ('' == wfMessage( $messageKey)->text()){
+				return $messageKey;
+			} else {
+				$m=wfMessage( $messageKey)->text();
+			}
+		}
+		return $m;
+	}
+	private function secondsFromHours( $s ){
+		return $s * 60 * 60.0;
 	}
 
 	private function get_available_capacity( $resource_id, $duration, $deferral ) {
@@ -250,11 +257,11 @@ class ReservationController implements ReservationConcept {
 		$ret = array();
 		$db = new ReservationDBInterface();
 		$vars = array(
-			'res_beneficiary_name',
-			'res_beneficiary_id',
+			'res_beneficiary_name'=>'user_name',
+			'res_beneficiary_id'=>'user_id',
 			);
 		$ret = $db->select(
-			array('res_beneficiary'), 
+			array('user'), 
 			$vars,
 			array(),
 			__METHOD__,
