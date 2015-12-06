@@ -81,9 +81,15 @@ class SpecialReservation extends SpecialPage {
 
 	private function outputReservations( &$out, $res ){
 		if (isset($res['warning'])){
-			$out->addHTML( "<span class='reservation-warning'>" . 
-				$res['warning'] . "</span>"
-			);
+			if ( count( $res['warning'] ) > 0 ) {
+				foreach ( $res['warning']  AS $w ) {
+					if ( isset( $w['type'] )  && isset( $w['message'])   ){
+						if ( 'warning'== $w['type'] ){
+							$out->addHTML( "<span class='reservation-warning'>" . $w['message'] . "</span>" ) ;
+						}
+					}
+				}
+			}
 		}
 		$render = new ReservationRender();
 		if (isset($res['output']['unrendered'])){
