@@ -37,56 +37,20 @@ class ReservationController  {
 	private $maxBookingDurationInHours = 168;
 	private $maxBookingDeferralInDays = 60;
 	private $blankTime = "";
-	private $dateFormat = "%H:%i %W %e %b %y";
+	private $dateFormatUnixToLabel = "H:i D d-M-Y";
+	private $dateFormatMySQL = "%H:%i %a %d-%b-%Y";
 
 	public function __construct( $user = "A.N.Other"){
 		$this->user = $user;
 		$this->messages = array();
 	}
 
-	private function getUser(){
-		return $this->user;
-	}
-		
 	public function get_controller( $parameters) {
 		$this->processPost( $parameters );
-		$ret = array();
-		$db = new ReservationDBInterface();
-		$vars = array(
-			'res_resource_name',
-			'res_booking_units',
-	 		'res_beneficiary_name'=>'user_name',	
-			'res_booking_startF'=>
-				'DATE_FORMAT(res_booking_start, "' . $this->dateFormat . '")',
-			'res_booking_endF'=>
-				'DATE_FORMAT(res_booking_end, "' . $this->dateFormat . '")',
-			'res_booking_id'
-			);
-		$bookings = $db->select(
-			array('res_booking','res_resource','res_unit','user'), 
-			$vars,
-			array(
-				'res_booking_beneficiary_id=user_id',
-				'res_booking_resource_id=res_resource_id',
-				'res_resource_unit_id=res_unit_id',
-				'res_booking_end > now()',
-				),
-			__METHOD__,
-			array( 'ORDER BY'=>array(
-				'res_resource_name','res_booking_end',
-				'res_booking_units','res_beneficiary_name'
-				)
-			)
-			);
-		$result['output']['unrendered']['table']['immediate']['data'] = $this->getImmediateCapacity();
-		$result['output']['unrendered']['table']['immediate']['header'] = array(
-			'Resource','Cores','Duration (hours), starting at ' . date("Y-m-d H:i", time() )  
-		);
-		$result['output']['unrendered']['table']['bookings']['data'] = $bookings;
-		$result['output']['unrendered']['table']['bookings']['header'] = array(
-			'Resource','Units','For','Start','Stop','Cancel',
-		);
-	  $result['output']['unrendered']['forms'][] = array(
+		$result['output']['unrendered']['table']['immediate'] = $this->getImmediateCapacityTable();
+		$result['output']['unrendered']['table']['bookings'] = $this->getBookings();
+		$result['output']['unrendered']['table']['log'] = $this->getLog();
+	  	$result['output']['unrendered']['forms'][] = array(
 			'content'=> $this->get_booking_form( NULL ),
 			'type'=>'select',
 			);
@@ -94,6 +58,10 @@ class ReservationController  {
 		return $result;
 	}
 
+	private function getUser(){
+		return $this->user;
+	}
+		
 	private function getBookings(){
 		$ret = array();
 		$db = new ReservationDBInterface();
@@ -102,9 +70,9 @@ class ReservationController  {
 			'res_booking_units',
 	 		'res_beneficiary_name'=>'user_name',	
 			'res_booking_startF'=>
-				'DATE_FORMAT(res_booking_start, "' . $this->dateFormat . '")',
+				'DATE_FORMAT(res_booking_start, "' . $this->dateFormatMySQL . '")',
 			'res_booking_endF'=>
-				'DATE_FORMAT(res_booking_end, "' . $this->dateFormat . '")',
+				'DATE_FORMAT(res_booking_end, "' . $this->dateFormatMySQL . '")',
 			'res_booking_id'
 			);
 		$bookings = $db->select(
@@ -130,6 +98,38 @@ class ReservationController  {
 		return $ret;
 	}
 
+	private function getLog(){
+		$ret = array();
+		$db = new ReservationDBInterface();
+		$vars = array(
+			'res_log_who',
+			'res_log_whenF'=>
+				'DATE_FORMAT(res_log_when, "' . $this->dateFormatMySQL . '")',
+			'res_log_text',
+			);
+		$res = $db->select(
+			array('res_log'), 
+			$vars,
+			array(),
+			__METHOD__,
+			array( 'LIMIT'=>100, 'ORDER BY'=>array('res_log_when DESC'))
+			);
+		$ret['data'] = $res;
+		$ret['header'] = array(
+			'Who','When','What',
+		);
+		return $ret;
+	}
+
+	private function getImmediateCapacityTable(){
+		$result = array();
+		$result['data'] = $this->getImmediateCapacity();
+		$result['header'] = array(
+			'Resource','Cores','Duration (hours), starting at ' . date("Y-m-d H:i", time() )  
+		);
+		return $result;
+	}
+
 	private function processPost( $p) {
 		if( isset( $p['order'] )){
 			if ( 'add_booking' == $p['order'] && 
@@ -151,7 +151,15 @@ class ReservationController  {
 					'res_booking_start'=>date("Y-m-d H:i:s", time() + $this->secondsFromHours( $p['deferral']) ),
 					'res_booking_end'=>date("Y-m-d H:i:s", time()+$this->secondsFromHours($p['deferral'] + $p['duration'])),
 					);
-					return $db->insert( $table, $values );
+					if( $db->insert( $table, $values )){
+						$message = $this->getLogMessage(
+						"added", $this->getUserName($p['beneficiary']),
+						$p['quantity'], $this->getResourceName($p['resource']),
+						time() + $this->secondsFromHours( $p['deferral'] ),
+						time() + $this->secondsFromHours( $p['deferral'] + $p['duration'] )
+						);
+						return $this->addToLog( $this->getUser(), time(), $message);
+					}
 				} else {
 					$message = "Could not make requested booking. ";
 					$message .= $this->capacityMessage( $p['resource'], $p['deferral'], $p['duration'], $available);
@@ -171,9 +179,55 @@ class ReservationController  {
 				$table="res_booking";
 				$values=array( 'res_booking_end'=>date("Y-m-d H:i:s", time()));
 				$cond = array( 'res_booking_id'=> $p['booking_id'] );
-				return $db->update( $table, $values, $cond );
+				$message = $this->getLogUpdateMessage( time(), $p['booking_id'] );
+				if ( $db->update( $table, $values, $cond ) ){
+					$this->addToLog( 
+						$this->getUser(), 
+						time(), 
+						$message
+						);
+				}
 			}
 		}
+	}
+
+	private function getLogUpdateMessage( $newUnixTime, $bookingID ){
+		$b = new ReservationBooking();
+		$b->setID( $bookingID );
+		if ($newUnixTime < $b->getUnixStart() ){
+			$verb = "cancelled";
+		} else {
+			$verb = "stopped";
+		}
+		return $this->getLogMessage( $verb,
+			$b->getBeneficiaryName(),
+			$b->getQuantity(),
+			$b->getResourceName(),
+			$b->getUnixStart(),
+			$b->getUnixEnd()
+		);
+	}
+
+	private function getLogMessage( $verb, $beneficiary, $cores, 
+		$resourceName, $unixStart, $unixEnd ){
+		return $verb . " " . $cores . " on " . $resourceName . 
+			" from " . $this->getLogTime( $unixStart ) . 
+			" to " . $this->getLogTime( $unixEnd );
+	}
+
+	private function getLogTime( $unixTime ){
+		return date($this->dateFormatUnixToLabel, $unixTime );
+	}
+
+	private function addToLog( $who, $unixWhen, $text ){
+		$db = new ReservationDBInterface();
+		$table="res_log";
+		$values=array(
+			'res_log_who'=>$who,
+			'res_log_when'=>date("Y-m-d H:i:s", $unixWhen ),
+			'res_log_text'=>$text
+		);
+		return $db->insert( $table, $values );
 	}
 
 	private function capacityMessage( $resource_id, $deferral, $duration, $units ){
@@ -223,7 +277,7 @@ class ReservationController  {
 
 	private function getImmediateCapacity(){
 		$ret = array();
-		$durs = array(0.5, 1.0, 2.0, 4.0, 8.0, 16.0);
+		$durs = array(1.0, 4.0, 16.0);
 		foreach( $durs as $d ){
 			$a = $this->getAlternativeCapacity( $d, 0, 0 );
 			if ( isset( $a['resource'] ) ){
@@ -261,6 +315,22 @@ class ReservationController  {
 		$max_capacity = $res[0]['capacity'];
 //		print_r($max_capacity);
 		return $max_capacity;
+	}
+
+	private function getUserName( $user_id ) {
+		$db = new ReservationDBInterface();
+		$vars = array(
+			'user_name'
+			);
+		$res = $db->select(
+			array('user'), 
+			$vars,
+			array(
+				'user_id' => $user_id,
+				)
+			);
+		$c = $res[0]['user_name'];
+		return $c;
 	}
 
 	private function getResourceName( $resource_id ) {

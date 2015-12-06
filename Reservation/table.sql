@@ -23,19 +23,19 @@ CREATE TABLE res_group(
 	primary key (res_group_id)  
 );
 
-DROP table IF EXISTS res_beneficiary;
-CREATE TABLE res_beneficiary(
-	res_beneficiary_id int not null auto_increment, 
-	res_beneficiary_name varchar(100) not null,
-	primary key (res_beneficiary_id)  
-);
+#DROP table IF EXISTS res_beneficiary;
+#CREATE TABLE res_beneficiary(
+#	res_beneficiary_id int not null auto_increment, 
+#	res_beneficiary_name varchar(100) not null,
+#	primary key (res_beneficiary_id)  
+#);
 
-DROP table IF EXISTS res_membership;
-CREATE TABLE res_membership(
-	res_membership_beneficiary_id int not null, 
-	res_membership_group_id  int not null,
-	primary key (res_membership_group_id, res_membership_beneficiary_id)  
-);
+#DROP table IF EXISTS res_membership;
+#CREATE TABLE res_membership(
+#	res_membership_beneficiary_id int not null, 
+#	res_membership_group_id  int not null,
+#	primary key (res_membership_group_id, res_membership_beneficiary_id)  
+#);
 
 DROP table IF EXISTS res_booking;
 CREATE TABLE res_booking(
@@ -51,7 +51,8 @@ CREATE TABLE res_booking(
 DROP table IF EXISTS res_log;
 CREATE TABLE res_log(
 	res_log_id int not null auto_increment, 
-	res_log_text varchar(200) not null,
-  res_log_when datetime not null,
+	res_log_who varchar(200) not null,
+	res_log_text varchar(400) not null,
+  	res_log_when datetime not null,
 	primary key (res_log_id)  
 );

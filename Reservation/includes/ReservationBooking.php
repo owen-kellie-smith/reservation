@@ -35,8 +35,8 @@ class ReservationBooking extends ReservationObject {
 
 	private $resourceName;
 	private $resourceID;
-	private $start;
-	private $end;
+	private $unixstart;
+	private $unixend;
 	private $beneficiaryName;
 	private $units;
 	private $dateFormat = "%H:%i %W %e %b %y";
@@ -44,12 +44,12 @@ class ReservationBooking extends ReservationObject {
 	public function __construct(){
 	}
 
-	public function getStart(){
-		return $this->start;
+	public function getUnixStart(){
+		return $this->unixstart;
 	}
 
-	public function getEnd(){
-		return $this->end;
+	public function getUnixEnd(){
+		return $this->unixend;
 	}
 
 	public function getQuantity(){
@@ -58,6 +58,10 @@ class ReservationBooking extends ReservationObject {
 
 	public function getResourceName(){
 		return $this->resourceName;
+	}
+
+	public function getBeneficiaryName(){
+		return $this->beneficiaryName;
 	}
 
 	private function nullify(){
@@ -78,10 +82,8 @@ class ReservationBooking extends ReservationObject {
 			'res_resource_id',
 			'res_booking_units',
 	 		'res_beneficiary_name'=>'user_name',	
-			'res_booking_startF'=>
-				'DATE_FORMAT(res_booking_start, "' . $this->dateFormat . '")',
-			'res_booking_endF'=>
-				'DATE_FORMAT(res_booking_end, "' . $this->dateFormat . '")',
+			'res_booking_startU'=>"UNIX_TIMESTAMP(STR_TO_DATE(res_booking_start, '%M %d %Y %h:%i%p'))",
+			'res_booking_endU'=>"UNIX_TIMESTAMP(STR_TO_DATE(res_booking_end, '%M %d %Y %h:%i%p'))",
 			);
 		$res = $db->select(
 			array('res_booking','res_resource','res_unit','user'), 
@@ -105,11 +107,11 @@ class ReservationBooking extends ReservationObject {
 		if (isset($res[0]['res_beneficiary_name'])){
 			$this->beneficiaryName = $res[0]['res_beneficiary_name'];
 		}
-		if (isset($res[0]['res_booking_startF'])){
-			$this->start = $res[0]['res_booking_startF'];
+		if (isset($res[0]['res_booking_startU'])){
+			$this->unixstart = $res[0]['res_booking_startU'];
 		}
-		if (isset($res[0]['res_booking_endF'])){
-			$this->end = $res[0]['res_booking_endF'];
+		if (isset($res[0]['res_booking_endU'])){
+			$this->unixend = $res[0]['res_booking_endU'];
 		}
 	}
 					

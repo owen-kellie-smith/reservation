@@ -52,7 +52,7 @@ class SpecialReservation extends SpecialPage {
 	}
 
 	private function getReservations(){
-		$m = new ReservationController();
+		$m = new ReservationController( $this->getUser()->getName() );
 		return $m->get_controller($this->getRequest()->getValues()) ; 
 	}
 
@@ -97,16 +97,19 @@ class SpecialReservation extends SpecialPage {
 				$res['output']['unrendered'], ''
 			);
 		}
+		if (isset($res['immediate'])){
+            		$out->addHTML( $res['immediate'] );
+		}
 		if (isset($res['forms'])){
 			foreach ($res['forms'] AS $_f){
 					$out->addHTML( $_f ); 
 			}
 		}
-		if (isset($res['immediate'])){
-            		$out->addHTML( $res['immediate'] );
-		}
 		if (isset($res['bookings'])){
             		$out->addHTML( $res['bookings'] );
+		}
+		if (isset($res['log'])){
+            		$out->addHTML( $res['log'] );
 		}
 	}
 }

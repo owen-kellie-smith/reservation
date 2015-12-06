@@ -20,7 +20,7 @@
   		"HTML_Common": "PEAR/HTML/Common.php",
 		"Validate": "PEAR/Validate.php",
 		"SpecialReservation": "specials/SpecialReservation.php",
-		"ReservationConcept":	"includes/ReservationConcept.php",
+		"ReservationBooking":	"includes/ReservationBooking.php",
 		"ReservationController":	"includes/ReservationController.php",
 		"ReservationCollection": "includes/ReservationCollection.php",
 		"ReservationDBInterface": "includes/ReservationDBInterface.php",
