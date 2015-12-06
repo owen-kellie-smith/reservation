@@ -33,13 +33,19 @@
 class ReservationController  {
 
 	private $messages; 
+	private $user;
 	private $maxBookingDurationInHours = 168;
 	private $maxBookingDeferralInDays = 60;
 	private $blankTime = "";
 	private $dateFormat = "%H:%i %W %e %b %y";
 
-	public function __construct(){
+	public function __construct( $user = "A.N.Other"){
+		$this->user = $user;
 		$this->messages = array();
+	}
+
+	private function getUser(){
+		return $this->user;
 	}
 		
 	public function get_controller( $parameters) {
@@ -86,6 +92,42 @@ class ReservationController  {
 			);
 		$result['warning'] = $this->messages;
 		return $result;
+	}
+
+	private function getBookings(){
+		$ret = array();
+		$db = new ReservationDBInterface();
+		$vars = array(
+			'res_resource_name',
+			'res_booking_units',
+	 		'res_beneficiary_name'=>'user_name',	
+			'res_booking_startF'=>
+				'DATE_FORMAT(res_booking_start, "' . $this->dateFormat . '")',
+			'res_booking_endF'=>
+				'DATE_FORMAT(res_booking_end, "' . $this->dateFormat . '")',
+			'res_booking_id'
+			);
+		$bookings = $db->select(
+			array('res_booking','res_resource','res_unit','user'), 
+			$vars,
+			array(
+				'res_booking_beneficiary_id=user_id',
+				'res_booking_resource_id=res_resource_id',
+				'res_resource_unit_id=res_unit_id',
+				'res_booking_end > now()',
+				),
+			__METHOD__,
+			array( 'ORDER BY'=>array(
+				'res_resource_name','res_booking_end',
+				'res_booking_units','res_beneficiary_name'
+				)
+			)
+			);
+		$ret['data'] = $bookings;
+		$ret['header'] = array(
+			'Resource','Cores','For','Start','Stop','Cancel',
+		);
+		return $ret;
 	}
 
 	private function processPost( $p) {
