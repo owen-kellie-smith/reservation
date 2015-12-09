@@ -44,6 +44,17 @@ class ReservationBooking extends ReservationObject {
 	private $isDirty;
 	private $dateFormat = "%H:%i %W %e %b %y";
 	private $dateFormatUnixToLabel = "H:i D d-M-Y";
+	private $minPerInt=15;
+	private $hourNightStarts = 17;
+	private $hourNightEnds = 10;
+	
+	private function roundedUpUnixTime( $seconds ){
+		return ceil($seconds / ($this->minPerInt * 60)) * ($this->minPerInt * 60); 
+	}
+
+	private function roundedDownUnixTime( $seconds ){
+		return floor($seconds / ($this->minPerInt * 60)) * ($this->minPerInt * 60); 
+	}
 
 	public function __construct( User $user ){
 		$this->user = $user;
@@ -52,21 +63,18 @@ class ReservationBooking extends ReservationObject {
 	private function getUser(){
 		return $this->user;
 	}
-/*
 	public function getBeneficiaryName(){
 		return $this->beneficiaryName;
 	}
 
+/*
 	public function getBookingID(){
 		return $this->bookingID;
 	}
+*/
 
 	public function getResourceID(){
 		return $this->resourceID;
-	}
-
-	public function getResourceName(){
-		return $this->resourceName;
 	}
 
 	public function getQuantity(){
@@ -80,7 +88,6 @@ class ReservationBooking extends ReservationObject {
 	public function getUnixStart(){
 		return $this->unixStart;
 	}
-*/
 
 	private function nullify(){
 		$this->resourceName = null;
@@ -138,50 +145,90 @@ class ReservationBooking extends ReservationObject {
 		}
 	}
 
-  public function submitBooking( $p ){
-			if (  isset( $p['quantity'] ) &&
-						isset( $p['duration'] ) &&
-						isset( $p['deferral'] ) ){
-					$alternative = $this->getAlternativeCapacity( $p['duration'], $p['deferral'], $p['quantity'] - 0.5 ); # seek a capacity strictly higher;
-					if ( isset( $alternative['resource'] ) && isset( $alternative['capacity'] ) ){
-						$p['resource'] = $alternative['resource'];
-						$p['beneficiary'] = $this->user->getID();
-						$message = $this->saveBooking($p);
-						return $message;
-					} else {
-						$message = "The system does not have capacity for your request.  Are you logged in? ";
-						return array( 'type'=>'warning','message'=>$message ) ;
-					}
-				} else {
-					$message = "Quantity / duration / deferral not set? Could not make any booking. ";
-					return array( 'type'=>'warning','message'=>$message ) ;
-				}
+  private function submitBookingFixedStartStop( $p ){
+		$alternative = $this->getAlternativeCapacityA( $p['unixStart'], $p['unixEnd'], $p['quantity'] - 0.5 ); # seek a capacity strictly higher;
+		if ( isset( $alternative['resource'] ) && isset( $alternative['capacity'] ) ){
+			$p['resource'] = $alternative['resource'];
+			$p['beneficiary'] = $this->user->getID();
+			$message = $this->saveBookingA($p);
+			return $message;
+		} else {
+			$message = "The system does not have capacity for your request.  Are you logged in? ";
+			return array( 'type'=>'warning','message'=>$message ) ;
 		}
+	}
+
+  public function submitBookingOvernight( $p ){
+		if (  isset( $p['quantity'] )  ){
+			$_now = time();
+			$p['unixStart'] = $this->unixTimeStartTonightBooking();
+			$p['unixEnd'] = $this->unixTimeTomorrowMOrning();
+  			return $this->submitBookingFixedStartStop( $p );
+		} else {
+			$message = "Quantity / duration / deferral not set? Could not make any booking. ";
+			return array( 'type'=>'warning','message'=>$message ) ;
+		}
+	}
+
+	private function unixTimeStartTonightBooking(){
+		return max(time(), $this->unixTimeStartTonight() );
+	}
+
+	private function unixTimeStartTonight(){
+		$_now = time();
+		$hourNow = date("H", $_now);
+		$minNow = date("i", $_now);
+		$secNow = date("s", $_now);
+		return $_now - $secNow 
+			- 60 * $minNow  
+			- 60 * 60 * $hourNow
+			+ 60 * 60 * $this->hourNightStarts;
+	}
+
+	private function unixTimeTomorrowMorning(){
+		return $this->unixTimeStartTonight()
+		 + 60 * 60 * (24 + $this->hourNightEnds - $this->hourNightStarts);
+	}
+
+	
+  public function submitBooking( $p ){
+		if (  isset( $p['quantity'] ) &&
+			isset( $p['duration'] ) &&
+			isset( $p['deferral'] ) ){
+			$_now = time();
+			$p['unixStart'] = $this->roundedDownUnixTime( $_now + $this->secondsFromHours( $p['deferral'] ) );
+			$p['unixEnd'] = $this->roundedUpUnixTime( $_now + $this->secondsFromHOurs( $p['deferral'] + $p['duration'] ) );
+  			return $this->submitBookingFixedStartStop( $p );
+		} else {
+			$message = "Quantity / duration / deferral not set? Could not make any booking. ";
+			return array( 'type'=>'warning','message'=>$message ) ;
+		}
+	}
   
 
-		private function saveBooking($p){
-						$db = new ReservationDBInterface();
-						$table="res_booking";
-						$values=array(
-							'res_booking_resource_id'=>$p['resource'],
-							'res_booking_beneficiary_id'=>$p['beneficiary'],
-							'res_booking_units'=>$p['quantity'],
-							'res_booking_start'=>date("Y-m-d H:i:s", time() + $this->secondsFromHours( $p['deferral']) ),
-							'res_booking_end'=>date("Y-m-d H:i:s", time()+$this->secondsFromHours($p['deferral'] + $p['duration'])),
-							);
-						if( $db->insert( $table, $values )){
-							$message = $this->getLogMessage(
-							"added", $this->getUserName($p['beneficiary']),
-							$p['quantity'], $this->getResourceName($p['resource']),
-							time() + $this->secondsFromHours( $p['deferral'] ),
-							time() + $this->secondsFromHours( $p['deferral'] + $p['duration'] )
-							);
-							$this->addToLog( $this->getUser()->getName(), time(), $message);
-							$message=null;
-							$bkMessage = "You are booked on " . $this->getResourceName($p['resource']);
-							return array( 'type'=>'success','message'=>$bkMessage ) ;
-						}	
-			}
+	private function saveBookingA($p){
+		$db = new ReservationDBInterface();
+		$table="res_booking";
+		$values=array(
+			'res_booking_resource_id'=>$p['resource'],
+			'res_booking_beneficiary_id'=>$p['beneficiary'],
+			'res_booking_units'=>$p['quantity'],
+			'res_booking_start'=>date("Y-m-d H:i:s", $p['unixStart'] ),
+			'res_booking_end'=>date("Y-m-d H:i:s", $p['unixEnd']),
+			);
+		if( $db->insert( $table, $values )){
+			$message = $this->getLogMessage(
+			"added", $this->getUserName($p['beneficiary']),
+			$p['quantity'], $this->getResourceName($p['resource']),
+			$p['unixStart'],
+			$p['unixEnd']
+			);
+			$this->addToLog( $this->getUser()->getName(), time(), $message);
+				$message=null;
+			$bkMessage = "You are booked on " . $this->getResourceName($p['resource']);
+			return array( 'type'=>'success','message'=>$bkMessage ) ;
+		}	
+	}
 
   public function cancelBooking( $p ){
 			if ( isset( $p['booking_id'] ) ){
@@ -214,7 +261,7 @@ class ReservationBooking extends ReservationObject {
 		return $this->getLogMessage( $verb,
 			$b->getBeneficiaryName(),
 			$b->getQuantity(),
-			$b->getResourceName(),
+			$b->getResourceName( $b->getResourceID() ),
 			$b->getUnixStart(),
 			$b->getUnixEnd()
 		);
@@ -259,16 +306,15 @@ class ReservationBooking extends ReservationObject {
 			". ";
 	}
 
-	private function getAlternativeCapacity( $duration, $deferral, $capacity ){
+	private function getAlternativeCapacityA( $unixStart, $unixEnd, $capacity ){
 		$ret = array();
 		$capOld = $capacity;
 		$ben = new ReservationBeneficiary( $this->getUser() );
 		$r = $ben->getAllowableResources();
-//print_r($r);
 		if ( count($r) > 0 ){
 			foreach ($r as $key=>$res){
 				if (isset( $res['res_resource_id'] ) ){
-					$capNew = $this->get_available_capacity( $res['res_resource_id'], $duration, $deferral );
+					$capNew = $this->get_available_capacity_a( $res['res_resource_id'], $unixStart, $unixEnd );
 					if ( $capNew > $capOld ){
 						$ret = array('resource'=>$res['res_resource_id'], 'capacity'=>$capNew);
 						$capOld = $capNew;
@@ -279,6 +325,7 @@ class ReservationBooking extends ReservationObject {
 		}
 		return $ret;
 	}
+
 
 	private function getImmediateCapacity(){
 		$placeC=1; $placeD=0; $placeR = 2;
@@ -304,6 +351,12 @@ class ReservationBooking extends ReservationObject {
 		$header[$placeD] = 'Hours required, starting at ' . date("Y-m-d H:i", time() )  ;
 		$result['header'] = $header;
 		return $result;
+	}
+
+	private function get_available_capacity_a( $resource_id, $unixStart, $unixEnd ) {
+		$cap = max(0, $this->get_max_capacity( $resource_id ) -  
+			$this->get_committed_units_a( $resource_id, $unixStart, $unixEnd ));
+		return $cap;
 	}
 
 	private function get_available_capacity( $resource_id, $duration, $deferral ) {
@@ -367,9 +420,9 @@ class ReservationBooking extends ReservationObject {
 		}
 	}
 
-	private function get_committed_units( $resource_id, $duration, $deferral ) {
-		$upperLimit = date("Y-m-d H:i:s", time() + $this->secondsFromHours( $duration + $deferral ));
-		$lowerLimit = date("Y-m-d H:i:s", time()+$this->secondsFromHours( $deferral ));
+	private function get_committed_units_a( $resource_id, $unixStart, $unixEnd ) {
+		$upperLimit = date("Y-m-d H:i:s", $unixEnd);
+		$lowerLimit = date("Y-m-d H:i:s", $unixStart);
 
 		$ret = array();
 		$db = new ReservationDBInterface();

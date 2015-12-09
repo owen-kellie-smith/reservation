@@ -58,6 +58,10 @@ class ReservationController  {
 			'content'=> $this->get_booking_form( NULL ),
 			'type'=>'select',
 			);
+	  $result['output']['unrendered']['forms'][] = array(
+			'content'=> $this->get_booking_form_overnight( NULL ),
+			'type'=>'select',
+			);
 		$result['messages'] = $this->messages;
 		return $result;
 	}
@@ -166,7 +170,9 @@ class ReservationController  {
 	private function processPost( $p) {
 		if( isset( $p['order'] )){
 			$b = new ReservationBooking( $this->user );
-			if ( 'add_booking' == $p['order'] ){
+			if ( 'add_booking_overnight' == $p['order'] ){
+				$this->messages[] = $b->submitBookingOvernight( $p );
+			} else if ( 'add_booking' == $p['order'] ){
 				$this->messages[] = $b->submitBooking( $p );
 			} else if ( 'cancel_booking' == $p['order'] ){
 				$this->messages[] = $b->cancelBooking( $p );
@@ -227,16 +233,16 @@ class ReservationController  {
 
   private function get_quantity_labels(){
 			$rsort = array();
-				for ($i=0, $ii=$this->get_max_units(); $i < $ii; $i++){
-					$rsort[strval($i+1)]=" " . $i+1 . " " . (0==$i ? 'core' : 'cores');
+				for ($i=1, $ii=$this->get_max_units(); $i <= $ii; $i = 2*$i){
+					$rsort[strval($i)]=" " . $i . " " . (1==$i ? 'core' : 'cores');
 				}
 		return $rsort;
 	}
 
   private function get_duration_labels(){
 			$rsort = array();
-				for ($i=0, $ii=2 * $this->maxBookingDurationInHours; $i < $ii; $i++){
-					$rsort[strval(($i+1.0)/2)]=" required for " . ($i+1.0)/2 . " " . (1==$i ? 'hour' : 'hours');
+				for ($i=0, $ii=4 * $this->maxBookingDurationInHours; $i < $ii; $i++){
+					$rsort[strval(($i+1.0)/4)]=" required for " . ($i+1.0)/4 . " " . (1==$i ? 'hour' : 'hours');
 				}
 		return $rsort;
 	}
@@ -302,6 +308,15 @@ class ReservationController  {
 		return $p;
 	}
 
+	protected function get_booking_form_overnight( $unused ){
+		$p = array('method'=> 'POST', 'submit'=>self::myMessage(  'Get overnight booking') , self::myMessage(  'reservation-post-booking-overnight'));
+		$p['select'][1]['select-options'] = $this->get_quantity_labels() ;
+		$p['select'][1]['select-name'] = 'quantity';
+		$p['select'][1]['select-label'] = self::myMessage(  'res-select-quantity');
+		$p['order'] = 'add_booking_overnight';
+		$p['formLabel'] = 'New overnight booking';
+		return $p;
+	}
 
 
 }
