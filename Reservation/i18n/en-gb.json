@@ -5,6 +5,7 @@
 	"reservation": "Reservation",
 	"reservation-desc": "This extension provides a form for booking cores on blades",
 	"reservation-helloworld": "Book cores on blades",
+	"reservation-log-helloworld": "Log of core bookings (dumb page, does nothing)",
 	"reservation-helloworld-intro": "Welcome to the Reservation Form",
 	"zzzzzzz":"If you can see me then something is wrong"
 }

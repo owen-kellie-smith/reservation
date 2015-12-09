@@ -35,12 +35,12 @@ foreach ( array( '',
         set_include_path(get_include_path(). PATH_SEPARATOR. dirname( dirname(__FILE__)). "/". $_dir. $path );
 }
 
-class SpecialReservation extends SpecialPage {
+class SpecialReservationLog extends SpecialPage {
 
 	private $showUglyDebugMessagesOnRenderedPage=false;
 
 	public function __construct() {
-		parent::__construct( 'Reservation' );
+		parent::__construct( 'ReservationLog' );
 	}
 
 	public function execute( $unused ) {
@@ -63,7 +63,8 @@ class SpecialReservation extends SpecialPage {
 	}
 
 	private function outputGreetings( &$out ){
-		$out->setPageTitle( $this->msg( 'reservation-helloworld' ) );
+		$out->setPageTitle( $this->msg( 'reservation-log-helloworld' ) );
+		$out->addWikiText("[[Special:Reservation]] to make new booking");
 //		$out->addWikiMsg( 'reservation-helloworld-intro' );
 //		$out->addHTML( $this->restartForm() );
 	}
@@ -114,6 +115,7 @@ class SpecialReservation extends SpecialPage {
 			$out->addWikiText("==Where the most cores are available now==");
             		$out->addHTML( $res['immediate'] );
 		}
+/*
 		if (isset($res['forms'])){
 			foreach ($res['forms'] AS $_f){
 					$out->addHTML( $_f ); 
@@ -123,7 +125,7 @@ class SpecialReservation extends SpecialPage {
 			$out->addWikiText("==Future bookings==");
             		$out->addHTML( $res['bookings'] );
 		}
-/*
+*/
 		if (isset($res['usage'])){
 			$out->addWikiText("==Usage by person==");
             		$out->addHTML( $res['usage'] );
@@ -132,7 +134,5 @@ class SpecialReservation extends SpecialPage {
 			$out->addWikiText("==Latest log==");
             		$out->addHTML( $res['log'] );
 		}
-*/
-		$out->addWikiText("See [[Special:ReservationLog]] for log.");
 	}
 }

@@ -1,6 +1,6 @@
 {
 	"name": "Reservation",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"author": [
 		"Owen Kellie-Smith"
 	],
@@ -20,6 +20,8 @@
   		"HTML_Common": "PEAR/HTML/Common.php",
 		"Validate": "PEAR/Validate.php",
 		"SpecialReservation": "specials/SpecialReservation.php",
+		"SpecialReservationLog": "specials/SpecialReservationLog.php",
+		"ReservationBeneficiary":	"includes/ReservationBeneficiary.php",
 		"ReservationBooking":	"includes/ReservationBooking.php",
 		"ReservationController":	"includes/ReservationController.php",
 		"ReservationCollection": "includes/ReservationCollection.php",
@@ -56,7 +58,8 @@
 		}
 	},
 	"SpecialPages": {
-		"Reservation": "SpecialReservation"
+		"Reservation": "SpecialReservation",
+		"ReservationLog": "SpecialReservationLog"
 	},
 	"manifest_version": 1
 }

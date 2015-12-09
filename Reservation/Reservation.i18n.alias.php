@@ -34,4 +34,5 @@ $specialPageAliases = array();
 /** English (English) */
 $specialPageAliases['en'] = array(
 	'Reservation' => array( 'Reservation' ),
+	'ReservationLog' => array( 'ReservationLog' ),
 );
