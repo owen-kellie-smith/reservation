@@ -52,7 +52,7 @@ class ReservationBooking extends ReservationObject {
 	private function getUser(){
 		return $this->user;
 	}
-
+/*
 	public function getBeneficiaryName(){
 		return $this->beneficiaryName;
 	}
@@ -80,6 +80,7 @@ class ReservationBooking extends ReservationObject {
 	public function getUnixStart(){
 		return $this->unixStart;
 	}
+*/
 
 	private function nullify(){
 		$this->resourceName = null;
@@ -145,12 +146,15 @@ class ReservationBooking extends ReservationObject {
 					if ( isset( $alternative['resource'] ) && isset( $alternative['capacity'] ) ){
 						$p['resource'] = $alternative['resource'];
 						$p['beneficiary'] = $this->user->getID();
-						$this->saveBooking($p);
+						$message = $this->saveBooking($p);
+						return $message;
+					} else {
+						$message = "The system does not have capacity for your request.  Are you logged in? ";
+						return array( 'type'=>'warning','message'=>$message ) ;
 					}
 				} else {
-					$message = "Could not make requested booking. ";
-					$this->messages[] = array( 'type'=>'warning','message'=>$message ) ;
-					$message = null;
+					$message = "Quantity / duration / deferral not set? Could not make any booking. ";
+					return array( 'type'=>'warning','message'=>$message ) ;
 				}
 		}
   
@@ -172,7 +176,10 @@ class ReservationBooking extends ReservationObject {
 							time() + $this->secondsFromHours( $p['deferral'] ),
 							time() + $this->secondsFromHours( $p['deferral'] + $p['duration'] )
 							);
-							return $this->addToLog( $this->getUser()->getName(), time(), $message);
+							$this->addToLog( $this->getUser()->getName(), time(), $message);
+							$message=null;
+							$bkMessage = "You are booked on " . $this->getResourceName($p['resource']);
+							return array( 'type'=>'success','message'=>$bkMessage ) ;
 						}	
 			}
 
@@ -255,15 +262,19 @@ class ReservationBooking extends ReservationObject {
 	private function getAlternativeCapacity( $duration, $deferral, $capacity ){
 		$ret = array();
 		$capOld = $capacity;
-		$r = $this->getResourceLabels();
+		$ben = new ReservationBeneficiary( $this->getUser() );
+		$r = $ben->getAllowableResources();
+//print_r($r);
 		if ( count($r) > 0 ){
-			foreach ($r as $key=>$label){
-				$capNew = $this->get_available_capacity( $key, $duration, $deferral );
-				if ( $capNew > $capOld ){
-					$ret = array('resource'=>$key, 'capacity'=>$capNew);
-					$capOld = $capNew;
+			foreach ($r as $key=>$res){
+				if (isset( $res['res_resource_id'] ) ){
+					$capNew = $this->get_available_capacity( $res['res_resource_id'], $duration, $deferral );
+					if ( $capNew > $capOld ){
+						$ret = array('resource'=>$res['res_resource_id'], 'capacity'=>$capNew);
+						$capOld = $capNew;
+					}
+					$capNew = null;
 				}
-				$capNew = null;
 			}
 		}
 		return $ret;
@@ -320,6 +331,23 @@ class ReservationBooking extends ReservationObject {
 		}
 	}
 
+	private function getResourceName( $resource_id ) {
+		$db = new ReservationDBInterface();
+		$vars = array(
+			'res_resource_name'
+			);
+		$res = $db->select(
+			array('res_resource'), 
+			$vars,
+			array(
+				'res_resource_id' => $resource_id,
+				)
+			);
+		if (isset ($res[0]['res_resource_name']) ){
+			$c = $res[0]['res_resource_name'];
+			return $c;
+		}
+	}
 
 	private function getUserName( $user_id ) {
 		$db = new ReservationDBInterface();

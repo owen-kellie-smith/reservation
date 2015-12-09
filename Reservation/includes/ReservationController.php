@@ -58,7 +58,7 @@ class ReservationController  {
 			'content'=> $this->get_booking_form( NULL ),
 			'type'=>'select',
 			);
-		$result['warning'] = $this->messages;
+		$result['messages'] = $this->messages;
 		return $result;
 	}
 
@@ -163,9 +163,9 @@ class ReservationController  {
 		if( isset( $p['order'] )){
 			$b = new ReservationBooking( $this->user );
 			if ( 'add_booking' == $p['order'] ){
-				$b->submitBooking( $p );
+				$this->messages[] = $b->submitBooking( $p );
 			} else if ( 'cancel_booking' == $p['order'] ){
-				$b->cancelBooking( $p );
+				$this->messages[] = $b->cancelBooking( $p );
 			}
 		}
 	}

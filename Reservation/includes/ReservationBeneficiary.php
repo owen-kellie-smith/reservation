@@ -48,34 +48,25 @@ class ReservationBeneficiary extends ReservationObject {
 	}
 
 	public function getGroups(){
-/*		
-	public function setID( $i ){
-		$this->nullify();
-		$db = new ReservationDBInterface();
-		$vars = array(
-			'res_resource_name',
-			'res_resource_id',
-			'res_booking_units',
-	 		'res_beneficiary_name'=>'user_name',	
-			'res_booking_startU'=>"UNIX_TIMESTAMP(res_booking_start)",
-			'res_booking_endU'=>"UNIX_TIMESTAMP(res_booking_end)",
-			);
-		$res = $db->select(
-			array('res_booking','res_resource','res_unit','user'), 
-			$vars,
-			array(
-				'res_booking_beneficiary_id=user_id',
-				'res_booking_resource_id=res_resource_id',
-				'res_resource_unit_id=res_unit_id',
-				'res_booking_id'=>$i,
-				)
-			);
-*/
+		return $this->user->getGroups();
 		return  array();
 	}
 
 	public function getAllowableResources(){
-		return  array();
+		$db = new ReservationDBInterface();
+		$vars = array(
+			'res_resource_name',
+			'res_resource_id',
+			);
+		$res = $db->select(
+			array('res_group','res_resource'), 
+			$vars,
+			array(
+				'res_resource_group_id=res_group_id',
+				'res_group_right'=>$this->getRights(),
+				)
+			);
+		return $res;
 	}
 
 } // end of class
