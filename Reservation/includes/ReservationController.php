@@ -80,6 +80,7 @@ class ReservationController  {
 	}
 		
 	private function getBookings(){
+		$marginInSeconds = 60;
 		$ret = array();
 		$db = new ReservationDBInterface();
 		$vars = array(
@@ -87,7 +88,7 @@ class ReservationController  {
 			'res_booking_units',
 	 		'res_beneficiary_name'=>'user_name',	
 			'res_booking_startF'=>
-				'IF( res_booking_start < now(), "Current",DATE_FORMAT(res_booking_start, "' . $this->dateFormatMySQL . '"))',
+				'IF( res_booking_start < DATE_ADD( now(), INTERVAL ' . $marginInSeconds . ' SECOND ), "Current",DATE_FORMAT(res_booking_start, "' . $this->dateFormatMySQL . '"))',
 			'res_booking_endF'=>
 				'DATE_FORMAT(res_booking_end, "' . $this->dateFormatMySQL . '")',
 			'res_booking_id'
@@ -103,7 +104,7 @@ class ReservationController  {
 				),
 			__METHOD__,
 			array( 'ORDER BY'=>array(
-				'IF( res_booking_start < now(),0,1)','res_resource_name','res_booking_units DESC',
+				'IF( res_booking_start < DATE_ADD( now(), INTERVAL ' . $marginInSeconds . ' SECOND) ,0,1)','res_resource_name','res_booking_units DESC',
 				'res_booking_end','res_beneficiary_name'
 				)
 			)
