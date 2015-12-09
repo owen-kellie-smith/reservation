@@ -53,7 +53,6 @@ class ReservationController  {
 
   private function getPage(){
 		$result['output']['unrendered']['table'] = $this->getTables(); 
-		$r = null;
 	  $result['output']['unrendered']['forms'][] = array(
 			'content'=> $this->get_booking_form( NULL ),
 			'type'=>'select',
@@ -72,6 +71,7 @@ class ReservationController  {
 		$r['bookings'] = $this->getBookings();
 		$r['log'] = $this->getLog();
 		$r['usage'] = $this->getUsage();
+		$r['current-usage'] = $this->getCurrentUsage();
 		return $r;
 	}
 
@@ -87,7 +87,7 @@ class ReservationController  {
 			'res_booking_units',
 	 		'res_beneficiary_name'=>'user_name',	
 			'res_booking_startF'=>
-				'DATE_FORMAT(res_booking_start, "' . $this->dateFormatMySQL . '")',
+				'IF( res_booking_start < now(), "Current",DATE_FORMAT(res_booking_start, "' . $this->dateFormatMySQL . '"))',
 			'res_booking_endF'=>
 				'DATE_FORMAT(res_booking_end, "' . $this->dateFormatMySQL . '")',
 			'res_booking_id'
@@ -103,8 +103,8 @@ class ReservationController  {
 				),
 			__METHOD__,
 			array( 'ORDER BY'=>array(
-				'res_resource_name','res_booking_end',
-				'res_booking_units','res_beneficiary_name'
+				'IF( res_booking_start < now(),0,1)','res_resource_name','res_booking_units DESC',
+				'res_booking_end','res_beneficiary_name'
 				)
 			)
 			);
@@ -135,6 +135,36 @@ class ReservationController  {
 		$ret['data'] = $res;
 		$ret['header'] = array(
 			'Who','When','What',
+		);
+		return $ret;
+	}
+
+	private function getCurrentUsage(){
+		$marginInSeconds = 60;
+		$ret = array();
+		$db = new ReservationDBInterface();
+              	$vars = array(
+				'res_resource_name', 
+				'unit_hours'=>'SUM(res_booking_units)',
+			);
+//print_r($vars);
+		$res = $db->select(
+			array('res_booking','res_resource'), 
+			$vars,
+			array('res_resource_id=res_booking_resource_id',
+				"res_booking_end > DATE_SUB( now(), INTERVAL " . $marginInSeconds . " SECOND )",
+				"res_booking_start < DATE_ADD( now(), INTERVAL " . $marginInSeconds . " SECOND)",
+				),
+			__METHOD__,
+			array( 
+				'GROUP BY'=> array('res_booking_resource_id'),
+			 	'ORDER BY'=> array('res_resource_name'),
+			)
+
+			);
+		$ret['data'] = $res;
+		$ret['header'] = array(
+			'Blade','Cores',
 		);
 		return $ret;
 	}

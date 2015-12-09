@@ -52,6 +52,12 @@ public function get_rendered_result( $u=array(), $pageTitle='' ){
            		$u['table']['schedule']['header']
              );
           }
+       	if (isset($u['table']['current-usage'])){
+           $r['current-usage'] = $this->get_table(
+           		$u['table']['current-usage']['data'],
+           		$u['table']['current-usage']['header']
+             );
+          }
        	if (isset($u['table']['usage'])){
            $r['usage'] = $this->get_table(
            		$u['table']['usage']['data'],
