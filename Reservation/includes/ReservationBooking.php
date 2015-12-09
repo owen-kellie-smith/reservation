@@ -176,9 +176,9 @@ class ReservationBooking extends ReservationObject {
 						}	
 			}
 
-  private function cancelBooking( $p ){
+  public function cancelBooking( $p ){
 			if ( isset( $p['booking_id'] ) ){
-				$db = new ReservationDBInterface();
+				$db = new ReservationDBInterface( $this->getUser() );
 				$table="res_booking";
 				$values=array( 'res_booking_end'=>date("Y-m-d H:i:s", time()));
 				$cond = array( 'res_booking_id'=> $p['booking_id'] );
@@ -195,7 +195,7 @@ class ReservationBooking extends ReservationObject {
 
 	private function getLogUpdateMessage( $newUnixTime, $bookingID ){
 
-		$b = new ReservationBooking();
+		$b = new ReservationBooking( $this->getUser() );
 		$b->setID( $bookingID );
 //print_r( $newUnixTime );
 //print_r( $b->getUnixStart() );
@@ -314,9 +314,10 @@ class ReservationBooking extends ReservationObject {
 				'res_resource_id' => $resource_id,
 				)
 			);
-		$max_capacity = $res[0]['capacity'];
-//		print_r($max_capacity);
-		return $max_capacity;
+		if (isset ($res[0]['capacity']) ){
+			$max_capacity = $res[0]['capacity'];
+			return $max_capacity;
+		}
 	}
 
 
@@ -332,8 +333,10 @@ class ReservationBooking extends ReservationObject {
 				'user_id' => $user_id,
 				)
 			);
-		$c = $res[0]['user_name'];
-		return $c;
+		if (isset ($res[0]['user_name']) ){
+			$c = $res[0]['user_name'];
+			return $c;
+		}
 	}
 
 	private function get_committed_units( $resource_id, $duration, $deferral ) {

@@ -52,7 +52,7 @@ class SpecialReservation extends SpecialPage {
 	}
 
 	private function getReservations(){
-		$m = new ReservationController( $this->getUser()->getName() );
+		$m = new ReservationController( $this->getUser() );
 		return $m->get_controller($this->getRequest()->getValues()) ; 
 	}
 
