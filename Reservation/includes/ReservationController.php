@@ -85,16 +85,18 @@ class ReservationController  {
 		if ( 0 == count( $r ) ){
 			if ($this->getUser()->isLoggedIn()){
 			$this->messages[] = array( 'type'=>'warning',
-				'message'=>"You don't have any bookable blades.  To get bookable blades, please contact someone in the Administrator group.");
+				'message'=>wfMessage('reservation-no-bookable-blades')->text());
 			} else {
 			$this->messages[] = array( 'type'=>'warning',
-				'message'=>"Please log in to see if you have any bookable blades.");
+				'message'=>wfMessage('reservation-login-for-bookable-blades')->text());
 			}
 
 		} 
 		$ret['data'] = $r;
 		$ret['header'] = array(
-			'Blade','Total cores','Group-right',
+			wfMessage('reservation-label-blade')->text(),
+			wfMessage('reservation-label-total-cores')->text(),
+			wfMessage('reservation-label-group-right')->text()
 		);
 		return $ret;
 	}
@@ -103,7 +105,9 @@ class ReservationController  {
 		$r = $this->getResourceRights();
 		$ret['data'] = $r;
 		$ret['header'] = array(
-			'Blade','Total cores','Group-right',
+			wfMessage('reservation-label-blade')->text(),
+			wfMessage('reservation-label-total-cores')->text(),
+			wfMessage('reservation-label-group-right')->text()
 		);
 		return $ret;
 	}
@@ -121,7 +125,7 @@ class ReservationController  {
 			'res_booking_units',
 	 		'res_beneficiary_name'=>'user_name',	
 			'res_booking_startF'=>
-				'IF( res_booking_start < DATE_ADD( now(), INTERVAL ' . $marginInSeconds . ' SECOND ), "Current",DATE_FORMAT(res_booking_start, "' . $this->dateFormatMySQL . '"))',
+				'IF( res_booking_start < DATE_ADD( now(), INTERVAL ' . $marginInSeconds . ' SECOND ), "' . wfMessage('reservation-label-current')->text() . '",DATE_FORMAT(res_booking_start, "' . $this->dateFormatMySQL . '"))',
 			'res_booking_endF'=>
 				'DATE_FORMAT(res_booking_end, "' . $this->dateFormatMySQL . '")',
 			'res_booking_id'
@@ -144,7 +148,12 @@ class ReservationController  {
 			);
 		$ret['data'] = $bookings;
 		$ret['header'] = array(
-			'Resource','Cores','For','Start','Stop','Cancel',
+						wfMessage('reservation-label-blade')->text(),
+						wfMessage('reservation-label-cores')->text(),
+						wfMessage('reservation-label-for')->text(),
+						wfMessage('reservation-label-start')->text(),
+						wfMessage('reservation-label-stop')->text(),
+						wfMessage('reservation-label-cancel')->text(),
 		);
 		$ret['delete'] = $this->getUser()->isLoggedIn();
 		return $ret;
@@ -169,7 +178,9 @@ class ReservationController  {
 			);
 		$ret['data'] = $res;
 		$ret['header'] = array(
-			'Who','When','What',
+						wfMessage('reservation-label-who')->text(),
+						wfMessage('reservation-label-when')->text(),
+						wfMessage('reservation-label-what')->text(),
 		);
 		return $ret;
 	}
@@ -199,7 +210,8 @@ class ReservationController  {
 			);
 		$ret['data'] = $res;
 		$ret['header'] = array(
-			'Blade','Cores',
+						wfMessage('reservation-label-blade')->text(),
+						wfMessage('reservation-label-cores')->text(),
 		);
 		return $ret;
 	}
