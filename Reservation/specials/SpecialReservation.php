@@ -64,7 +64,7 @@ class SpecialReservation extends SpecialPage {
 
 	private function outputGreetings( &$out ){
 		$out->setPageTitle( $this->msg( 'reservation-helloworld' ) );
-//		$out->addWikiMsg( 'reservation-helloworld-intro' );
+		$out->addWikiMsg( 'reservation-helloworld-intro' );
 //		$out->addHTML( $this->restartForm() );
 	}
 
@@ -111,7 +111,7 @@ class SpecialReservation extends SpecialPage {
 			);
 		}
 		if (isset($res['immediate'])){
-			$out->addWikiText("==Where the most cores are available now==");
+			$out->addWikiMsg( 'reservation-section-available-cores' );
             		$out->addHTML( $res['immediate'] );
 		}
 		if (isset($res['forms'])){
@@ -120,16 +120,16 @@ class SpecialReservation extends SpecialPage {
 			}
 		}
 		if (isset($res['current-usage'])){
-			$out->addWikiText("==Cores booked out for immediate use==");
+			$out->addWikiMsg( 'reservation-section-cores-booked' );
             		$out->addHTML( $res['current-usage'] );
 		}
 		if (isset($res['bookings'])){
-			$out->addWikiText("==Future bookings==");
+			$out->addWikiMsg( 'reservation-section-future-bookings' );
             		$out->addHTML( $res['bookings'] );
 		}
 		if (isset($res['your-blades'])){
-			$out->addWikiText("==Blades available for you==");
-			$out->addWikiText("Available blades are determined by whch user group you are in.  You can see all the user groups at [[Special:ListGroupRights]].  If you need to be added to a group please contact anyone in the Administrators group.");
+			$out->addWikiMsg( 'reservation-section-blades-available-for-you' );
+			$out->addWikiMsg( 'reservation-see-userrights' );
             		$out->addHTML( $res['your-blades'] );
 		}
 /*
@@ -142,6 +142,6 @@ class SpecialReservation extends SpecialPage {
             		$out->addHTML( $res['log'] );
 		}
 */
-		$out->addWikiText("See [[Special:ReservationLog]] for log.");
+			$out->addWikiMsg( 'reservation-see-log' );
 	}
 }

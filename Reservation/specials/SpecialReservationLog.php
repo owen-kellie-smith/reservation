@@ -64,7 +64,7 @@ class SpecialReservationLog extends SpecialPage {
 
 	private function outputGreetings( &$out ){
 		$out->setPageTitle( $this->msg( 'reservation-log-helloworld' ) );
-		$out->addWikiText("See [[Special:Reservation]] to make a new booking.");
+			$out->addWikiMsg( 'reservation-see-bookings' );
 //		$out->addWikiMsg( 'reservation-helloworld-intro' );
 //		$out->addHTML( $this->restartForm() );
 	}
@@ -112,7 +112,7 @@ class SpecialReservationLog extends SpecialPage {
 			);
 		}
 		if (isset($res['immediate'])){
-			$out->addWikiText("==Where the most cores are available now==");
+			$out->addWikiMsg( 'reservation-section-available-cores' );
             		$out->addHTML( $res['immediate'] );
 		}
 /*
@@ -127,16 +127,17 @@ class SpecialReservationLog extends SpecialPage {
 		}
 */
 		if (isset($res['all-blades'])){
-			$out->addWikiText("==Available blades==");
-			$out->addWikiText("Available blades are determined by user group.  You can see all the user groups at [[Special:ListGroupRights]].  If you need to be added to a group please contact anyone in the Administrators group.");
+			$out->addWikiMsg( 'reservation-section-blades-available-for-anyone' );
+			$out->addWikiMsg( 'reservation-section-blades-see-sysop' );
             		$out->addHTML( $res['all-blades'] );
 		}
 		if (isset($res['usage'])){
-			$out->addWikiText("==Usage by person==");
+
+			$out->addWikiMsg( 'reservation-section-usage-person' );
             		$out->addHTML( $res['usage'] );
 		}
 		if (isset($res['log'])){
-			$out->addWikiText("==Latest log==");
+			$out->addWikiMsg( 'reservation-section-log' );
             		$out->addHTML( $res['log'] );
 		}
 	}
