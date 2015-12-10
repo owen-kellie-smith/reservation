@@ -53,6 +53,7 @@ class ReservationController  {
 
   private function getPage(){
 		$result['output']['unrendered']['table'] = $this->getTables(); 
+	if ($this->getUser()->isLoggedIn()){
 	  $result['output']['unrendered']['forms'][] = array(
 			'content'=> $this->get_booking_form( NULL ),
 			'type'=>'select',
@@ -61,6 +62,7 @@ class ReservationController  {
 			'content'=> $this->get_booking_form_overnight( NULL ),
 			'type'=>'select',
 			);
+	}
 		$result['messages'] = $this->messages;
 		return $result;
 	}
@@ -81,8 +83,14 @@ class ReservationController  {
 		$b = new ReservationBeneficiary( $this->user );
 		$r = $b->getResourceRightList();
 		if ( 0 == count( $r ) ){
+			if ($this->getUser()->isLoggedIn()){
 			$this->messages[] = array( 'type'=>'warning',
-				'message'=>"You don't have any bookable blades.  If you need to book blades, please check you are logged in and contact someone in the Administrator group.");
+				'message'=>"You don't have any bookable blades.  To get bookable blades, please contact someone in the Administrator group.");
+			} else {
+			$this->messages[] = array( 'type'=>'warning',
+				'message'=>"Please log in to see if you have any bookable blades.");
+			}
+
 		} 
 /*
 		$ret['data'] = $r;
@@ -140,6 +148,7 @@ class ReservationController  {
 		$ret['header'] = array(
 			'Resource','Cores','For','Start','Stop','Cancel',
 		);
+		$ret['delete'] = $this->getUser()->isLoggedIn();
 		return $ret;
 	}
 

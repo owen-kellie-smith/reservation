@@ -85,7 +85,8 @@ public function get_rendered_result( $u=array(), $pageTitle='' ){
        	if (isset($u['table']['bookings'])){
            $r['bookings'] = $this->get_table(
            		$u['table']['bookings']['data'],
-           		$u['table']['bookings']['header']
+           		$u['table']['bookings']['header'],
+			$u['table']['bookings']['delete']
              );
           }
        	if (isset($u['table']['immediate'])){
@@ -216,7 +217,7 @@ public function get_rendered_result( $u=array(), $pageTitle='' ){
 	 *
 	 * @access private
 	 */
-	private function get_table( $row_data, $column_headers ){
+	private function get_table( $row_data, $column_headers , $delete=false){
 
 		// see http://pear.php.net/manual/en/package.html.html-table.intro.php
 		$table = new HTML_Table();
@@ -226,8 +227,10 @@ public function get_rendered_result( $u=array(), $pageTitle='' ){
 			for ($i =0, $ii = count( $column_headers ); $i < $ii; $i++ ){
 				if (isset($row_data[$nr][$i] )){
 					if ('' != $row_data[$nr][$i] ){
-						if (5 == $i){
-							$table->setCellContents( $nr+1, $i,  $this->getDeleteButton( $row_data[$nr][$i], 'booking_id') );
+						if (5 == $i ){
+							if ($delete){
+								$table->setCellContents( $nr+1, $i,  $this->getDeleteButton( $row_data[$nr][$i], 'booking_id') );
+							} 
 						} else {
 							$table->setCellContents( $nr+1, $i, $row_data[$nr][$i] );
 						}

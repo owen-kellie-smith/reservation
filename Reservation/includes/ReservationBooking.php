@@ -153,7 +153,7 @@ class ReservationBooking extends ReservationObject {
 			$message = $this->saveBookingA($p);
 			return $message;
 		} else {
-			$message = "The system does not have capacity for your request.  Are you logged in? ";
+			$message = "The system could not make your booking.";
 			return array( 'type'=>'warning','message'=>$message ) ;
 		}
 	}
