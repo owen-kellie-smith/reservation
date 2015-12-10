@@ -239,7 +239,9 @@ class ReservationController  {
 			);
 		$ret['data'] = $res;
 		$ret['header'] = array(
-			'For','Core-hours','When',
+						wfMessage('reservation-label-for')->text(),
+						wfMessage('reservation-label-core-hours')->text(),
+						wfMessage('reservation-label-when')->text(),
 		);
 		return $ret;
 	}
@@ -311,7 +313,7 @@ class ReservationController  {
   private function get_quantity_labels(){
 			$rsort = array();
 				for ($i=1, $ii=$this->get_max_units(); $i <= $ii; $i = 2*$i){
-					$rsort[strval($i)]=" " . $i . " " . (1==$i ? 'core' : 'cores');
+					$rsort[strval($i)]=" " . $i . " " . (1==$i ? wfMessage('reservation-label-core')->text() : wfMessage('reservation-label-core-plural')->text() );
 				}
 		return $rsort;
 	}
@@ -319,7 +321,7 @@ class ReservationController  {
   private function get_duration_labels(){
 			$rsort = array();
 				for ($i=0, $ii=4 * $this->maxBookingDurationInHours; $i < $ii; $i++){
-					$rsort[strval(($i+1.0)/4)]=" required for " . ($i+1.0)/4 . " " . (1==$i ? 'hour' : 'hours');
+					$rsort[strval(($i+1.0)/4)]=" " . wfMessage('reservation-label-required-for')->text() . " " . ($i+1.0)/4 . " " . (1==$i ? wfMessage('reservation-label-hour')->text() : wfMessage('reservation-label-hour-plural')->text());
 				}
 		return $rsort;
 	}
@@ -327,7 +329,7 @@ class ReservationController  {
   private function get_deferral_labels(){
 			$rsort = array();
 				for ($i=0, $ii=24 * $this->maxBookingDeferralInDays; $i < $ii; $i++){
-					$rsort[strval(($i))]=" starting " . (0==$i ? 'immediately' : 'in ' . $i . " " .(1==$i ? "hour" : "hours"));
+					$rsort[strval(($i))]=" " . wfMessage('reservation-label-starting')->text() . " " . (0==$i ? wfMessage('reservation-label-immediately')->text() : wfMessage('reservation-label-in')->text() . $i . " " .(1==$i ? wfMessage('reservation-label-hour')->text() : wfMessage('reservation-label-hour-plural')->text()));
 				}
 		return $rsort;
 	}
@@ -360,7 +362,7 @@ class ReservationController  {
 	}
 
 	protected function get_booking_form( $unused ){
-		$p = array('method'=> 'POST', 'submit'=>self::myMessage(  'Get new booking') , self::myMessage(  'reservation-post-booking'));
+		$p = array('method'=> 'POST', 'submit'=>self::myMessage(  'Get-new-booking') , self::myMessage(  'reservation-post-booking'));
 /*
 		$p['select'][0]['select-options'] = $this->getResourceLabels() ;
 		$p['select'][0]['select-name'] = 'resource';
@@ -381,17 +383,17 @@ class ReservationController  {
 		$p['select'][4]['select-name'] = 'deferral';
 		$p['select'][4]['select-label'] = self::myMessage(  'res-select-deferral');
 		$p['order'] = 'add_booking';
-		$p['formLabel'] = 'New booking';
+		$p['formLabel'] = wfMessage('reservation-label-new-booking')->text();
 		return $p;
 	}
 
 	protected function get_booking_form_overnight( $unused ){
-		$p = array('method'=> 'POST', 'submit'=>self::myMessage(  'Get overnight booking (17:00 to 10:00)') , self::myMessage(  'reservation-post-booking-overnight'));
+		$p = array('method'=> 'POST', 'submit'=>self::myMessage(  'Get-overnight-booking') , self::myMessage(  'reservation-post-booking-overnight'));
 		$p['select'][1]['select-options'] = $this->get_quantity_labels() ;
 		$p['select'][1]['select-name'] = 'quantity';
 		$p['select'][1]['select-label'] = self::myMessage(  'res-select-quantity');
 		$p['order'] = 'add_booking_overnight';
-		$p['formLabel'] = 'New overnight booking';
+		$p['formLabel'] = wfMessage('reservation-label-new-overnight-booking')->text();
 		return $p;
 	}
 

@@ -45,6 +45,9 @@ class SpecialReservation extends SpecialPage {
 
 	public function execute( $unused ) {
 		$this->displayPage( $this->getOutput(), $this->getReservations() );
+		if( !empty($_POST) ){
+//			$this->getOutput()->redirect( $this->getTitle()->getFullURL() );
+		}
 	}
 
 	protected function getGroupName() {

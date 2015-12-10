@@ -192,6 +192,7 @@ class ReservationBooking extends ReservationObject {
 
 	
   public function submitBooking( $p ){
+//echo __FILE__ . " submitBooking p " . print_r($p,1);
 		if (  isset( $p['quantity'] ) &&
 			isset( $p['duration'] ) &&
 			isset( $p['deferral'] ) ){
@@ -226,6 +227,7 @@ class ReservationBooking extends ReservationObject {
 			$this->addToLog( $this->getUser()->getName(), time(), $message);
 				$message=null;
 			$bkMessage = "You are booked on " . $this->getResourceName($p['resource']);
+//echo __FILE__ . " bkMessage " . print_r($bkMessage,1);
 			return array( 'type'=>'success','message'=>$bkMessage ) ;
 		}	
 	}
