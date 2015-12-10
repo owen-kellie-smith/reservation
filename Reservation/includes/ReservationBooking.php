@@ -45,8 +45,31 @@ class ReservationBooking extends ReservationObject {
 	private $dateFormat = "%H:%i %W %e %b %y";
 	private $dateFormatUnixToLabel = "H:i D d-M-Y";
 	private $minPerInt=15;
-	private $hourNightStarts = 17;
-	private $hourNightEnds = 10;
+
+	private function minPerInt(){
+		if (isset($GLOBALS['wgReservationConstant']['minPerInt'])){
+			return $GLOBALS['wgReservationConstant']['minPerInt'];
+		} else {
+			return 15;
+		}
+	}
+
+	private function hourNightStarts(){
+		if (isset(  $GLOBALS['wgReservationConstant']['nightStart'])){
+			return $GLOBALS['wgReservationConstant']['nightStart'];
+		} else {
+			return 17;
+		}
+	}
+
+	private function hourNightEnds(){
+		if (isset( $GLOBALS['wgReservationConstant']['nightEnd'] )){
+			return $GLOBALS['wgReservationConstant']['nightEnd'];
+		} else {
+			return 10;
+		}
+	}
+
 	
 	private function roundedUpUnixTime( $seconds ){
 		return ceil($seconds / ($this->minPerInt * 60)) * ($this->minPerInt * 60); 
@@ -182,12 +205,12 @@ class ReservationBooking extends ReservationObject {
 		return $_now - $secNow 
 			- 60 * $minNow  
 			- 60 * 60 * $hourNow
-			+ 60 * 60 * $this->hourNightStarts;
+			+ 60 * 60 * $this->hourNightStarts();
 	}
 
 	private function unixTimeTomorrowMorning(){
 		return $this->unixTimeStartTonight()
-		 + 60 * 60 * (24 + $this->hourNightEnds - $this->hourNightStarts);
+		 + 60 * 60 * (24 + $this->hourNightEnds() - $this->hourNightStarts());
 	}
 
 	
