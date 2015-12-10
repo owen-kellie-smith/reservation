@@ -64,7 +64,7 @@ class SpecialReservationLog extends SpecialPage {
 
 	private function outputGreetings( &$out ){
 		$out->setPageTitle( $this->msg( 'reservation-log-helloworld' ) );
-		$out->addWikiText("[[Special:Reservation]] to make new booking");
+		$out->addWikiText("See [[Special:Reservation]] to make a new booking.");
 //		$out->addWikiMsg( 'reservation-helloworld-intro' );
 //		$out->addHTML( $this->restartForm() );
 	}
@@ -126,6 +126,11 @@ class SpecialReservationLog extends SpecialPage {
             		$out->addHTML( $res['bookings'] );
 		}
 */
+		if (isset($res['all-blades'])){
+			$out->addWikiText("==Available blades==");
+			$out->addWikiText("Available blades are determined by user group.  You can see all the user groups at [[Special:ListGroupRights]].  If you need to be added to a group please contact anyone in the Administrators group.");
+            		$out->addHTML( $res['all-blades'] );
+		}
 		if (isset($res['usage'])){
 			$out->addWikiText("==Usage by person==");
             		$out->addHTML( $res['usage'] );

@@ -49,7 +49,24 @@ class ReservationBeneficiary extends ReservationObject {
 
 	public function getGroups(){
 		return $this->user->getGroups();
-		return  array();
+	}
+
+	public function getResourceRightList(){
+		$res = array();
+		$db = new ReservationDBInterface();
+		$vars = array(
+			'res_resource_name',
+			'res_group_right',
+			);
+		$res = $db->select(
+			array('res_group','res_resource'), 
+			$vars,
+			array(
+				'res_resource_group_id=res_group_id',
+				'res_group_right'=>$this->getRights(),
+				)
+			);
+		return $res;
 	}
 
 	public function getAllowableResources(){

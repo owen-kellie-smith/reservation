@@ -72,7 +72,34 @@ class ReservationController  {
 		$r['log'] = $this->getLog();
 		$r['usage'] = $this->getUsage();
 		$r['current-usage'] = $this->getCurrentUsage();
+		$r['your-blades'] = $this->getYourBlades();
+		$r['all-blades'] = $this->getAllBlades();
 		return $r;
+	}
+
+	private function getYourBlades() {
+		$b = new ReservationBeneficiary( $this->user );
+		$r = $b->getResourceRightList();
+		if ( 0 == count( $r ) ){
+			$this->messages[] = array( 'type'=>'warning',
+				'message'=>"You don't have any bookable blades.  If you need to book blades, please check you are logged in and contact someone in the Administrator group.");
+		} 
+/*
+		$ret['data'] = $r;
+		$ret['header'] = array(
+			'Blade','Group-right',
+		);
+		return $ret;
+*/
+	}
+
+	private function getAllBlades() {
+		$r = $this->getResourceRights();
+		$ret['data'] = $r;
+		$ret['header'] = array(
+			'Blade','Total cores','Group-right',
+		);
+		return $ret;
 	}
 
 	private function getUser(){
@@ -314,7 +341,7 @@ class ReservationController  {
 	}
 
 	protected function get_booking_form( $unused ){
-		$p = array('method'=> 'POST', 'submit'=>self::myMessage(  'Post new booking') , self::myMessage(  'reservation-post-booking'));
+		$p = array('method'=> 'POST', 'submit'=>self::myMessage(  'Get new booking') , self::myMessage(  'reservation-post-booking'));
 /*
 		$p['select'][0]['select-options'] = $this->getResourceLabels() ;
 		$p['select'][0]['select-name'] = 'resource';
@@ -340,7 +367,7 @@ class ReservationController  {
 	}
 
 	protected function get_booking_form_overnight( $unused ){
-		$p = array('method'=> 'POST', 'submit'=>self::myMessage(  'Get overnight booking') , self::myMessage(  'reservation-post-booking-overnight'));
+		$p = array('method'=> 'POST', 'submit'=>self::myMessage(  'Get overnight booking (17:00 to 10:00)') , self::myMessage(  'reservation-post-booking-overnight'));
 		$p['select'][1]['select-options'] = $this->get_quantity_labels() ;
 		$p['select'][1]['select-name'] = 'quantity';
 		$p['select'][1]['select-label'] = self::myMessage(  'res-select-quantity');
@@ -348,6 +375,29 @@ class ReservationController  {
 		$p['formLabel'] = 'New overnight booking';
 		return $p;
 	}
+
+	public function getResourceRights(){
+		$res = array();
+		$db = new ReservationDBInterface();
+		$vars = array(
+			'res_resource_name',
+			'res_resource_capacity',
+			'res_group_right',
+			);
+		$res = $db->select(
+			array('res_group','res_resource'), 
+			$vars,
+			array(
+				'res_resource_group_id=res_group_id',
+				),
+			__METHOD__,
+			array( 'ORDER BY'=>array(
+				'res_group_right','res_resource_name'
+				)
+			));
+		return $res;
+	}
+
 
 
 }

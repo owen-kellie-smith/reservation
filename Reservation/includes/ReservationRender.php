@@ -52,6 +52,18 @@ public function get_rendered_result( $u=array(), $pageTitle='' ){
            		$u['table']['schedule']['header']
              );
           }
+       	if (isset($u['table']['all-blades'])){
+           $r['all-blades'] = $this->get_table(
+           		$u['table']['all-blades']['data'],
+           		$u['table']['all-blades']['header']
+             );
+          }
+       	if (isset($u['table']['your-blades'])){
+           $r['your-blades'] = $this->get_table(
+           		$u['table']['your-blades']['data'],
+           		$u['table']['your-blades']['header']
+             );
+          }
        	if (isset($u['table']['current-usage'])){
            $r['current-usage'] = $this->get_table(
            		$u['table']['current-usage']['data'],

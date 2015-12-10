@@ -197,7 +197,7 @@ class ReservationBooking extends ReservationObject {
 			isset( $p['deferral'] ) ){
 			$_now = time();
 			$p['unixStart'] = $this->roundedDownUnixTime( $_now + $this->secondsFromHours( $p['deferral'] ) );
-			$p['unixEnd'] = $this->roundedUpUnixTime( $_now + $this->secondsFromHOurs( $p['deferral'] + $p['duration'] ) );
+			$p['unixEnd'] = $p['unixStart'] + $this->secondsFromHours( $p['duration'] ) ;
   			return $this->submitBookingFixedStartStop( $p );
 		} else {
 			$message = "Quantity / duration / deferral not set? Could not make any booking. ";

@@ -119,9 +119,18 @@ class SpecialReservation extends SpecialPage {
 					$out->addHTML( $_f ); 
 			}
 		}
+		if (isset($res['current-usage'])){
+			$out->addWikiText("==Cores booked out for immediate use==");
+            		$out->addHTML( $res['current-usage'] );
+		}
 		if (isset($res['bookings'])){
 			$out->addWikiText("==Future bookings==");
             		$out->addHTML( $res['bookings'] );
+		}
+		if (isset($res['your-blades'])){
+			$out->addWikiText("==Blades available for you==");
+			$out->addWikiText("Available blades are determined by whch user group you are in.  You can see all the user groups at [[Special:ListGroupRights]].  If you need to be added to a group please contact anyone in the Administrators group.");
+            		$out->addHTML( $res['your-blades'] );
 		}
 /*
 		if (isset($res['usage'])){
