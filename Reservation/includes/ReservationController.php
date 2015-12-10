@@ -92,13 +92,11 @@ class ReservationController  {
 			}
 
 		} 
-/*
 		$ret['data'] = $r;
 		$ret['header'] = array(
-			'Blade','Group-right',
+			'Blade','Total cores','Group-right',
 		);
 		return $ret;
-*/
 	}
 
 	private function getAllBlades() {

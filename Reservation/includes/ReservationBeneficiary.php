@@ -56,6 +56,7 @@ class ReservationBeneficiary extends ReservationObject {
 		$db = new ReservationDBInterface();
 		$vars = array(
 			'res_resource_name',
+			'res_resource_capacity',
 			'res_group_right',
 			);
 		$res = $db->select(
