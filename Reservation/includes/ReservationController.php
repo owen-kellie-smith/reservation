@@ -158,6 +158,9 @@ class ReservationController  {
 						wfMessage('reservation-label-cancel')->text(),
 		);
 		$ret['delete'] = $this->getUser()->isLoggedIn();
+		$ret['deleteColumn'] = 5; // i.e. position (counting from 0,1,..) of booking_id
+					// hard-code
+		$ret['deleteField'] = 'booking_id'; // hard-code -- as in ReservationBooking::cancel
 		return $ret;
 	}
 
@@ -191,21 +194,21 @@ class ReservationController  {
 		$marginInSeconds = $this->marginInSeconds;
 		$ret = array();
 		$db = new ReservationDBInterface();
-              	$vars = array(
-				'res_resource_name', 
+              	$vars = array(	'res_resource_name', 
 				'unit_hours'=>'SUM(res_booking_units)',
 			);
 //print_r($vars);
 		$res = $db->select(
-			array('res_booking','res_resource'), 
+			array('res_resource','res_booking'), 
 			$vars,
-			array('res_resource_id=res_booking_resource_id',
+			array(
+				'res_booking_resource_id=res_resource_id' ,
 				"res_booking_end > DATE_SUB( now(), INTERVAL " . $marginInSeconds . " SECOND )",
 				"res_booking_start < DATE_ADD( now(), INTERVAL " . $marginInSeconds . " SECOND)",
 				),
 			__METHOD__,
 			array( 
-				'GROUP BY'=> array('res_booking_resource_id'),
+				'GROUP BY'=> array('res_resource_id'),
 			 	'ORDER BY'=> array('res_resource_name'),
 			)
 
@@ -321,9 +324,11 @@ class ReservationController  {
 	}
 
   private function get_duration_labels(){
+		$b = new ReservationBooking( $this->user );
+		$scale = 60 / $b->getMinPerInt();
 			$rsort = array();
-				for ($i=0, $ii=4 * $this->maxBookingDurationInHours; $i < $ii; $i++){
-					$rsort[strval(($i+1.0)/4)]=" " . wfMessage('reservation-label-required-for')->text() . " " . ($i+1.0)/4 . " " . (1==$i ? wfMessage('reservation-label-hour')->text() : wfMessage('reservation-label-hour-plural')->text());
+				for ($i=0, $ii=$scale * $this->maxBookingDurationInHours; $i < $ii; $i++){
+					$rsort[strval(($i+1.0)/$scale)]=" " . wfMessage('reservation-label-required-for')->text() . " " . ($i+1.0)/$scale . " " . (1==($i+1.0)/$scale ? wfMessage('reservation-label-hour')->text() : wfMessage('reservation-label-hour-plural')->text());
 				}
 		return $rsort;
 	}
@@ -357,7 +362,7 @@ class ReservationController  {
 		if (count($ret)>0){
 			$rsort = array();
 				for ($i=0, $ii=count($ret); $i < $ii; $i++){
-					$rsort[$ret[$i]['res_beneficiary_id']]="for " .$ret[$i]['res_beneficiary_name'];
+					$rsort[$ret[$i]['res_beneficiary_id']]=wfMessage('reservation-label-for')->text() . " " .$ret[$i]['res_beneficiary_name'];
 				}
 		}
 		return $rsort;

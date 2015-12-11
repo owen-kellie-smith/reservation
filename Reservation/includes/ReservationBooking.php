@@ -48,6 +48,10 @@ class ReservationBooking extends ReservationObject {
 	private $defaultHourNightStarts=17;
 	private $defaultHourNightEnds=10;
 
+	public function getMinPerInt(){
+		return $this->minPerInt();
+	}
+
 	private function minPerInt(){
 		if (isset($GLOBALS['wgReservationConstant']['minPerInt'])){
 			return max(1, int($GLOBALS['wgReservationConstant']['minPerInt']));
