@@ -44,39 +44,40 @@ class ReservationBooking extends ReservationObject {
 	private $isDirty;
 	private $dateFormat = "%H:%i %W %e %b %y";
 	private $dateFormatUnixToLabel = "H:i D d-M-Y";
-	private $minPerInt=15;
+	private $defaultMinPerInt=15;
+	private $defaultHourNightStarts=17;
+	private $defaultHourNightEnds=10;
 
 	private function minPerInt(){
 		if (isset($GLOBALS['wgReservationConstant']['minPerInt'])){
-			return $GLOBALS['wgReservationConstant']['minPerInt'];
+			return max(1, int($GLOBALS['wgReservationConstant']['minPerInt']));
 		} else {
-			return 15;
+			return $this->defaultMinPerInt;
 		}
 	}
 
 	private function hourNightStarts(){
 		if (isset(  $GLOBALS['wgReservationConstant']['nightStart'])){
-			return $GLOBALS['wgReservationConstant']['nightStart'];
+			return min(23.99, max(0.01, $GLOBALS['wgReservationConstant']['nightStart']));
 		} else {
-			return 17;
+			return $this->defaultHourNightStarts;
 		}
 	}
 
 	private function hourNightEnds(){
 		if (isset( $GLOBALS['wgReservationConstant']['nightEnd'] )){
-			return $GLOBALS['wgReservationConstant']['nightEnd'];
+			return min(23.99, max(0.01, $GLOBALS['wgReservationConstant']['nightEnd']));
 		} else {
-			return 10;
+			return $this->defaultHourNightEnds;
 		}
 	}
-
 	
 	private function roundedUpUnixTime( $seconds ){
-		return ceil($seconds / ($this->minPerInt * 60)) * ($this->minPerInt * 60); 
+		return ceil($seconds / ($this->minPerInt() * 60)) * ($this->minPerInt() * 60); 
 	}
 
 	private function roundedDownUnixTime( $seconds ){
-		return floor($seconds / ($this->minPerInt * 60)) * ($this->minPerInt * 60); 
+		return floor($seconds / ($this->minPerInt() * 60)) * ($this->minPerInt() * 60); 
 	}
 
 	public function __construct( User $user ){
@@ -176,7 +177,7 @@ class ReservationBooking extends ReservationObject {
 			$message = $this->saveBookingA($p);
 			return $message;
 		} else {
-			$message = "The system could not make your booking.";
+			$message = wfMessage('reservation-message-could-not-book')->text();
 			return array( 'type'=>'warning','message'=>$message ) ;
 		}
 	}
@@ -188,7 +189,7 @@ class ReservationBooking extends ReservationObject {
 			$p['unixEnd'] = $this->unixTimeTomorrowMOrning();
   			return $this->submitBookingFixedStartStop( $p );
 		} else {
-			$message = "Quantity / duration / deferral not set? Could not make any booking. ";
+			$message = wfMessage('reservation-message-quantity-not-set')->text();
 			return array( 'type'=>'warning','message'=>$message ) ;
 		}
 	}
@@ -224,7 +225,7 @@ class ReservationBooking extends ReservationObject {
 			$p['unixEnd'] = $p['unixStart'] + $this->secondsFromHours( $p['duration'] ) ;
   			return $this->submitBookingFixedStartStop( $p );
 		} else {
-			$message = "Quantity / duration / deferral not set? Could not make any booking. ";
+			$message = wfMessage('reservation-message-quantity-not-set')->text();
 			return array( 'type'=>'warning','message'=>$message ) ;
 		}
 	}
@@ -249,7 +250,7 @@ class ReservationBooking extends ReservationObject {
 			);
 			$this->addToLog( $this->getUser()->getName(), time(), $message);
 				$message=null;
-			$bkMessage = "You are booked on " . $this->getResourceName($p['resource']);
+			$bkMessage = wfMessage('reservation-message-booked', $this->getResourceName($p['resource']))->text();
 //echo __FILE__ . " bkMessage " . print_r($bkMessage,1);
 			return array( 'type'=>'success','message'=>$bkMessage ) ;
 		}	
@@ -279,9 +280,9 @@ class ReservationBooking extends ReservationObject {
 //print_r( $newUnixTime );
 //print_r( $b->getUnixStart() );
 		if ($newUnixTime < $b->getUnixStart() ){
-			$verb = "cancelled";
+			$verb = wfMessage('reservation-log-cancelled')->text();
 		} else {
-			$verb = "stopped";
+			$verb = wfMessage('reservation-log-stopped')->text();
 		}
 		return $this->getLogMessage( $verb,
 			$b->getBeneficiaryName(),
@@ -294,10 +295,9 @@ class ReservationBooking extends ReservationObject {
 
 	private function getLogMessage( $verb, $beneficiary, $cores, 
 		$resourceName, $unixStart, $unixEnd ){
-		return $verb . " " . $cores . " on " . $resourceName . 
-			" for " . $beneficiary .
-			" from " . $this->getLogTime( $unixStart ) . 
-			" to " . $this->getLogTime( $unixEnd );
+		return wfMessage('reservation-log-message', 
+			$verb , $cores, $resourceName, $beneficiary,
+			 $this->getLogTime( $unixStart ), $this->getLogTime( $unixEnd ))->text();
 	}
 
 	private function getLogTime( $unixTime ){
@@ -320,15 +320,12 @@ class ReservationBooking extends ReservationObject {
 	}
 
 	private function capacityMessage( $resource_id, $deferral, $duration, $units ){
-		return 	"  The most you can book on " . 
-			$this->getResourceName($resource_id) . 
-			" from " . 
-			date("Y-m-d H:i:s", time() + $this->secondsFromHours( $deferral) ) . 
-			" to " . 
-			date("Y-m-d H:i:s", time() + $this->secondsFromHours( $deferral  + $duration ) ) . 
-			" is " . 
-			$units . 
-			". ";
+		return 	wfMessage('reservation-message-capacity', 
+				$this->getResourceName($resource_id), 
+				date("Y-m-d H:i:s", time() + $this->secondsFromHours( $deferral) ), 
+				date("Y-m-d H:i:s", time() + $this->secondsFromHours( $deferral  + $duration ) ),
+				$units
+			)->text();
 	}
 
 	private function getAlternativeCapacityA( $unixStart, $unixEnd, $capacity ){
@@ -371,9 +368,9 @@ class ReservationBooking extends ReservationObject {
 			$ret[] = $a;
 		}
 		$result['data'] = $ret;
-		$header[$placeR] = 'Resource';
-		$header[$placeC] = 'Cores available';
-		$header[$placeD] = 'Hours required, starting at ' . date("Y-m-d H:i", time() )  ;
+		$header[$placeR] = wfMessage('reservation-label-blade')->text();
+		$header[$placeC] = wfMessage('reservation-label-cores-available')->text();
+		$header[$placeD] = wfMessage('reservation-label-hours-required', date("Y-m-d H:i", time()))->text()  ;
 		$result['header'] = $header;
 		return $result;
 	}
