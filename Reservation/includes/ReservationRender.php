@@ -139,6 +139,7 @@ public function get_rendered_result( $u=array(), $pageTitle='' ){
 	}
 
 
+/*
 	private function get_render_rate_table( $rates, $hidden, $link='' ){
 		$link .=  $this->get_link($hidden);
 		for ( $i = 0, $ii = count( $rates['data'] ); $i < $ii; $i++ ){
@@ -156,7 +157,7 @@ public function get_rendered_result( $u=array(), $pageTitle='' ){
 		}
 		return $this->get_table( $rates['data'], $rates['header'] );
 	}
-
+*/
 
 	/**
 	 * Get string of &,= pairs suitable for writing a URL that can ge read via request
@@ -166,7 +167,7 @@ public function get_rendered_result( $u=array(), $pageTitle='' ){
 	 *
 	 * @access private
 	 */
-	private function get_link( $hidden ){
+/*	private function get_link( $hidden ){
 		$out = "";
 		if (count(array_keys( $hidden)) > 0 ){
 			foreach(array_keys( $hidden) as $key ){
@@ -176,6 +177,7 @@ public function get_rendered_result( $u=array(), $pageTitle='' ){
 		}
 		return $out;
 	}
+*/
 
 	/**
 	 * Get rendering of form as string.  Form includes as hidden fields all the features of a collection
@@ -188,6 +190,7 @@ public function get_rendered_result( $u=array(), $pageTitle='' ){
 	 *
 	 * @access private
 	 */
+/*
 	private function get_form_collection( ReservationCollection $cf, $submit = 'Submit', $intro = "" , $request = "", $pageid=""){
 		$out = "";
 		if ( !empty( $intro ) ){
@@ -206,7 +209,7 @@ public function get_rendered_result( $u=array(), $pageTitle='' ){
 		$out.= $form;
 		return $out;
 	}
-
+*/
 
 	/**
 	 * Get HTML table (as string that can be echoed)
@@ -313,10 +316,11 @@ public function get_rendered_result( $u=array(), $pageTitle='' ){
 	 *
 	 * @access private
 	 */
+/*
 	private function get_anchor_forward( ReservationForwardRate $f, $page_link ){
 		return "<a href='" . $page_link . "&request=explain_forward&forward_start_time=" . $f->get_start_time() . "&forward_end_time=" . $f->get_end_time() . "'>" . $f->get_i_effective() . "</a>";
 	}
-
+*/
 	
 
 	/**
@@ -412,7 +416,7 @@ public function get_rendered_result( $u=array(), $pageTitle='' ){
     'action' => $_SERVER['PHP_SELF']));
 		$form->addElement('hidden', $fieldName)->setValue($id);
 		$form->addElement('hidden', 'order')->setValue('cancel_booking');
-		$form->addElement('submit', null, array('value' => 'Cancel'));
+		$form->addElement('submit', null, array('value' => wfMessage('reservation-label-cancel')->text()));
 		return $form;
 	}
 

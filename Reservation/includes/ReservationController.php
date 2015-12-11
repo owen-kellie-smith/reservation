@@ -362,7 +362,7 @@ class ReservationController  {
 	}
 
 	protected function get_booking_form( $unused ){
-		$p = array('method'=> 'POST', 'submit'=>self::myMessage(  'Get-new-booking') , self::myMessage(  'reservation-post-booking'));
+		$p = array('method'=> 'POST', 'submit'=>wfMessage( 'reservation-label-get-new-booking')->text() , self::myMessage(  'reservation-post-booking'));
 /*
 		$p['select'][0]['select-options'] = $this->getResourceLabels() ;
 		$p['select'][0]['select-name'] = 'resource';
@@ -388,7 +388,7 @@ class ReservationController  {
 	}
 
 	protected function get_booking_form_overnight( $unused ){
-		$p = array('method'=> 'POST', 'submit'=>self::myMessage(  'Get-overnight-booking') , self::myMessage(  'reservation-post-booking-overnight'));
+		$p = array('method'=> 'POST', 'submit'=>wfMessage(  'reservation-label-get-overnight-booking') , self::myMessage(  'reservation-post-booking-overnight'));
 		$p['select'][1]['select-options'] = $this->get_quantity_labels() ;
 		$p['select'][1]['select-name'] = 'quantity';
 		$p['select'][1]['select-label'] = self::myMessage(  'res-select-quantity');
