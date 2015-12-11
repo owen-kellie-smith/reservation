@@ -34,8 +34,10 @@ class ReservationController  {
 
 	private $messages; 
 	private $user;
+	private $unitMultiplier = 2; // units in dropdown go up in powers of this multiplier
 	private $maxBookingDurationInHours = 168;
 	private $maxBookingDeferralInDays = 60;
+	private $marginInSeconds=59; // time to allow database to write
 	private $blankTime = "";
 	private $dateFormatUnixToLabel = "H:i D d-M-Y";
 	private $dateFormatMySQL = "%H:%i %a %d-%b-%Y";
@@ -117,7 +119,7 @@ class ReservationController  {
 	}
 		
 	private function getBookings(){
-		$marginInSeconds = 60;
+		$marginInSeconds = $this->marginInSeconds;
 		$ret = array();
 		$db = new ReservationDBInterface();
 		$vars = array(
@@ -186,7 +188,7 @@ class ReservationController  {
 	}
 
 	private function getCurrentUsage(){
-		$marginInSeconds = 60;
+		$marginInSeconds = $this->marginInSeconds;
 		$ret = array();
 		$db = new ReservationDBInterface();
               	$vars = array(
@@ -217,7 +219,7 @@ class ReservationController  {
 	}
 
 	private function getUsage(){
-		$marginInSeconds = 5;
+		$marginInSeconds = $this->marginInSeconds;
 		$ret = array();
 		$db = new ReservationDBInterface();
               	$vars = array(
@@ -312,7 +314,7 @@ class ReservationController  {
 
   private function get_quantity_labels(){
 			$rsort = array();
-				for ($i=1, $ii=$this->get_max_units(); $i <= $ii; $i = 2*$i){
+				for ($i=1, $ii=$this->get_max_units(); $i <= $ii; $i = $this->unitMultiplier*$i){
 					$rsort[strval($i)]=" " . $i . " " . (1==$i ? wfMessage('reservation-label-core')->text() : wfMessage('reservation-label-core-plural')->text() );
 				}
 		return $rsort;
