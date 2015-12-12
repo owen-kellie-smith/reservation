@@ -230,8 +230,8 @@ class ReservationBooking extends ReservationObject {
 			isset( $p['duration'] ) &&
 			isset( $p['deferral'] ) ){
 			$_now = time();
-			$p['unixStart'] = $this->roundedDownUnixTime( $_now + $this->secondsFromHours( $p['deferral'] ) );
-			$p['unixEnd'] = $p['unixStart'] + $this->secondsFromHours( $p['duration'] ) ;
+			$p['unixStart'] =  $_now + $this->secondsFromHours( $p['deferral'] );
+			$p['unixEnd'] = $this->roundedUpUnixTime( $p['unixStart']) + $this->secondsFromHours( $p['duration'] ) ;
   			return $this->submitBookingFixedStartStop( $p );
 		} else {
 			$message = wfMessage('reservation-message-quantity-not-set')->text();
@@ -257,7 +257,7 @@ class ReservationBooking extends ReservationObject {
 			$p['unixStart'],
 			$p['unixEnd']
 			);
-			$this->addToLog( $this->getUser()->getName(), time(), $message);
+			$this->addToLog( $this->getUser()->getName(), time(), $message, 'add');
 				$message=null;
 			$bkMessage = wfMessage('reservation-message-booked', $this->getResourceName($p['resource']))->text();
 //echo __FILE__ . " bkMessage " . print_r($bkMessage,1);
@@ -276,7 +276,8 @@ class ReservationBooking extends ReservationObject {
 					$this->addToLog( 
 						$this->getUser(), 
 						time(), 
-						$message
+						$message,
+						'delete'
 						);
 				}
 			}
@@ -317,7 +318,7 @@ class ReservationBooking extends ReservationObject {
 		}
 	}
 
-	private function addToLog( $who, $unixWhen, $text ){
+	private function addToLog( $who, $unixWhen, $text, $type ){
 		$db = new ReservationDBInterface();
 		$table="res_log";
 		$values=array(
@@ -326,7 +327,7 @@ class ReservationBooking extends ReservationObject {
 			'res_log_text'=>$text
 		);
 
-$logEntry = new ManualLogEntry( 'reservation', 'booking' ); // Log action 'booking' in the Special:Log for 'reservation'
+$logEntry = new ManualLogEntry( 'reservation', $type ); // Log action 'booking' in the Special:Log for 'reservation'
 $logEntry->setPerformer( $this->getUser() ); // User object, the user who performed this action
 $logEntry->setTarget( $this->getTitle() ); // The page that this log entry affects, a Title object
 $logEntry->setComment( $text ); // Optional, user provided comment

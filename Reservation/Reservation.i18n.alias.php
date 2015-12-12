@@ -39,5 +39,7 @@ $specialPageAliases['en'] = array(
 $messages['en'] = array(   
   'log-name-reservation' => 'Reservation log',
   'log-description-reservation' => 'These events track when Reservation events happen in the system.',
-  'logentry-reservation-booking' => '$1 {{GENDER:$2|changed the bookings}} on page $3',
+  'logentry-reservation-add' => '$1 {{GENDER:$2|added a booking}} on page $3',
+  'logentry-reservation-delete' => '$1 {{GENDER:$2|deleted a booking}} on page $3',
+  'logentry-reservation-booking' => '$1 {{GENDER:$2|changed a booking}} on page $3',
 );

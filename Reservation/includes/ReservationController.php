@@ -329,9 +329,18 @@ class ReservationController  {
 		$b = new ReservationBooking( $this->user, $this->title );
 		$scale = 60 / $b->getMinPerInt();
 			$rsort = array();
-				for ($i=0, $ii=$scale * $this->maxBookingDurationInHours; $i < $ii; $i++){
-					$rsort[strval(($i+1.0)/$scale)]=" " . wfMessage('reservation-label-required-for')->text() . " " . ($i+1.0)/$scale . " " . (1==($i+1.0)/$scale ? wfMessage('reservation-label-hour')->text() : wfMessage('reservation-label-hour-plural')->text());
+			for ($i=-1, $ii=$scale * $this->maxBookingDurationInHours; $i < $ii; $i++){
+				$label = null;
+				if (-1 == $i){
+					$label = wfMessage('reservation-label-a-few-moments')->text();
+				} elseif ( 1==($i+1.0)/$scale ){
+					$label = wfMessage('reservation-label-required-for')->text() . " " . ($i+1.0)/$scale . " " . wfMessage('reservation-label-hour')->text();
+				} else {
+					$label = wfMessage('reservation-label-required-for')->text() . " " . ($i+1.0)/$scale . " " . wfMessage('reservation-label-hour-plural')->text();
 				}
+				$rsort[strval(($i+1.0)/$scale)]=" " . $label;
+				$label = null;
+			}
 		return $rsort;
 	}
 
