@@ -265,11 +265,14 @@ public function get_rendered_result( $u=array(), $pageTitle='' ){
 	 * @access private
 	 */
 	private function get_select_form( $return ){
+		$return['radio']['label']='Take space (with explicit consent) from ';
+		$return['radio']['content']=array(2=>'ALS');
+		$return['radio']['name']='override';
 		$out="";
 		if ( !empty( $return['introduction'] ) ){
 			$out = "<p>" . $return['introduction'] . "</p>" . "\r\n";
 		}
-		foreach (array('name','method','action','select','submit', 'order','formLabel') as $key){
+		foreach (array('name','method','action','select','submit', 'order','formLabel','radio') as $key){
 			$temp[$key]='';
 			if ( isset( $return[$key] ) ){
 				$temp[$key] = $return[$key];
@@ -283,6 +286,20 @@ public function get_rendered_result( $u=array(), $pageTitle='' ){
 			$calculator = $fieldset->addSelect( $s['select-name'] )
 				->setLabel( $s['select-label'] )
 				->loadOptions( $s['select-options']);
+		}
+		if ( isset( $return['radio'] ) && isset( $return['radio']['name'])  ){
+			$radioGrp = $fs->addElement('group');
+			if ( isset( $return['radio']['label'] ) ){
+				$radioGrp->setLabel( $return['radio']['label'] );
+			}
+			if ( isset( $return['radio']['content'] ) ){
+				if ( count( $return['radio']['content'] ) > 0 ){
+					foreach ( $return['radio']['content'] AS $value=>$label ){
+						$radioGrp->addElement('radio', $return['radio']['name'], array('value' => $value), array('content' => $label));
+					}
+					$value=null; $label=null;
+				}
+			}
 		}
 		$temp_page_id='';
 		if( isset($return['page_id'])){
