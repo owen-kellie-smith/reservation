@@ -179,7 +179,11 @@ class ReservationBooking extends ReservationObject {
 	}
 
   private function submitBookingFixedStartStop( $p ){
-		$alternative = $this->getAlternativeCapacityA( $p['unixStart'], $p['unixEnd'], $p['quantity'] - 0.5 ); # seek a capacity strictly higher;
+		$take=null;
+		if( isset( $p['take-from-group'] ) ){
+			$take =  $p['take-from-group'];
+		}
+		$alternative = $this->getAlternativeCapacityA( $p['unixStart'], $p['unixEnd'], $p['quantity'] - 0.5, $take ); # seek a capacity strictly higher;
 		if ( isset( $alternative['resource'] ) && isset( $alternative['capacity'] ) ){
 			$p['resource'] = $alternative['resource'];
 			$p['beneficiary'] = $this->user->getID();
@@ -347,11 +351,14 @@ $logEntry->publish( $logid );
 			)->text();
 	}
 
-	private function getAlternativeCapacityA( $unixStart, $unixEnd, $capacity ){
+	private function getAlternativeCapacityA( $unixStart, $unixEnd, $capacity, $take=-999 ){
 		$ret = array();
 		$capOld = $capacity;
 		$ben = new ReservationBeneficiary( $this->getUser() );
 		$r = $ben->getAllowableResources();
+		$r2 = $ben->getOverridingResources( $take );
+		$r = array_merge( $r, $r2 );
+//echo __FILE__ . "361  " . print_r($r,1);
 		if ( count($r) > 0 ){
 			foreach ($r as $key=>$res){
 				if (isset( $res['res_resource_id'] ) ){

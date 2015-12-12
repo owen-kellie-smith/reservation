@@ -42,6 +42,7 @@
 "reservation-label-new-overnight-booking":"New overnight booking",
 "reservation-label-get-new-booking":"Get new booking",
 "reservation-label-get-overnight-booking":"Get overnight booking",
+"reservation-label-no-one":"No one (use own groups only)",
 	"reservation-message-booked": "You are booked on $1.",
 	"reservation-message-capacity": "The most you can book on $1 from $2 to $3 is $4.",
 	"reservation-message-could-not-book": "The system could not make your booking.",

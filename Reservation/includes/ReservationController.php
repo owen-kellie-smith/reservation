@@ -406,6 +406,7 @@ class ReservationController  {
 		$p['select'][4]['select-label'] = self::myMessage(  'res-select-deferral');
 		$p['order'] = 'add_booking';
 		$p['formLabel'] = wfMessage('reservation-label-new-booking')->text();
+		$p['radio'] = $this->get_radio_buttons_to_override_booking_groups();
 		return $p;
 	}
 
@@ -416,7 +417,17 @@ class ReservationController  {
 		$p['select'][1]['select-label'] = self::myMessage(  'res-select-quantity');
 		$p['order'] = 'add_booking_overnight';
 		$p['formLabel'] = wfMessage('reservation-label-new-overnight-booking')->text();
+		$p['radio'] = $this->get_radio_buttons_to_override_booking_groups();
 		return $p;
+	}
+
+	private function get_radio_buttons_to_override_booking_groups(){
+		$r = array();
+		$r['label']='If necessary, take space (with explicit consent) from ';
+		$b = new ReservationBeneficiary( $this->user );
+		$r['content']=array_merge( array(-999=>wfMessage('reservation-label-no-one')->text()), $b->getDisallowedGroups());
+		$r['name']='take-from-group';
+		return $r;
 	}
 
 	public function getResourceRights(){

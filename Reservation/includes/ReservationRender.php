@@ -265,9 +265,6 @@ public function get_rendered_result( $u=array(), $pageTitle='' ){
 	 * @access private
 	 */
 	private function get_select_form( $return ){
-		$return['radio']['label']='Take space (with explicit consent) from ';
-		$return['radio']['content']=array(2=>'ALS');
-		$return['radio']['name']='override';
 		$out="";
 		if ( !empty( $return['introduction'] ) ){
 			$out = "<p>" . $return['introduction'] . "</p>" . "\r\n";

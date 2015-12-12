@@ -70,6 +70,96 @@ class ReservationBeneficiary extends ReservationObject {
 		return $res;
 	}
 
+
+	public function getOverridingResources( $groupID=-999 ){
+		$db = new ReservationDBInterface();
+		$vars = array(
+			'res_resource_name',
+			'res_resource_id',
+			);
+		$res = $db->select(
+			array('res_resource'), 
+			$vars,
+			array(
+				'res_resource_group_id'=>$groupID,
+				)
+			);
+		return $res;
+	}
+
+	private function getDisallowedGroupIDs(){
+		$all = $this->getAllGroupIDs();
+//echo __FILE__ . " all " . print_r($all,1);
+		$mine = $this->getAllowableGroupIDs();
+//echo __FILE__ . " mine " . print_r($mine,1);
+		$res = array_diff($all, $mine);
+//echo __FILE__ . " res " . print_r($res,1);
+		return $res;
+	}
+
+	public function getDisallowedGroups(){
+		$db = new ReservationDBInterface();
+		$vars = array(
+			'res_group_id',
+			'res_group_name',
+			);
+		$res = $db->select(
+			array('res_group'), 
+			$vars,
+			array(
+				'res_group_id'=>$this->getDisallowedGroupIDs(),
+				)
+			);
+		$r = array();
+		if (count($res)>0){
+			foreach ($res AS $row){
+				$r[$row['res_group_id']]=$row['res_group_name'];
+			}
+		}
+//echo __FILE__ . "getDisallowedGroups " . print_r($res,1);
+//echo __FILE__ . "getDisallowedGroups " . print_r($r,1);
+		return $r;
+	}
+
+	private function getAllGroupIDs(){
+		$db = new ReservationDBInterface();
+		$vars = array(
+			'res_group_id',
+			);
+		$res = $db->select(
+			array('res_group'), 
+			$vars
+			);
+		$r = array();
+		if (count($res)>0){
+			foreach ($res AS $row){
+				$r[] = $row['res_group_id'];
+			}
+		}
+		return $r;
+	}
+
+	private function getAllowableGroupIDs(){
+		$db = new ReservationDBInterface();
+		$vars = array(
+			'res_group_id',
+			);
+		$res = $db->select(
+			array('res_group'), 
+			$vars,
+			array(
+				'res_group_right'=>$this->getRights(),
+				)
+			);
+		$r = array();
+		if (count($res)>0){
+			foreach ($res AS $row){
+				$r[] = $row['res_group_id'];
+			}
+		}
+		return $r;
+	}
+
 	public function getAllowableResources(){
 		$db = new ReservationDBInterface();
 		$vars = array(
