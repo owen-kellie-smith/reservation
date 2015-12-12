@@ -33,6 +33,7 @@
  */
 class ReservationBooking extends ReservationObject {
 
+	private $title;
 	private $user;
   private $beneficiaryName;
 	private $bookingID;
@@ -84,10 +85,14 @@ class ReservationBooking extends ReservationObject {
 		return floor($seconds / ($this->minPerInt() * 60)) * ($this->minPerInt() * 60); 
 	}
 
-	public function __construct( User $user ){
+	public function __construct( User $user, Title $title ){
 		$this->user = $user;
+		$this->title = $title;
 	}
 
+	private function getTitle(){
+		return $this->title;
+	}
 	private function getUser(){
 		return $this->user;
 	}
@@ -279,7 +284,7 @@ class ReservationBooking extends ReservationObject {
 
 	private function getLogUpdateMessage( $newUnixTime, $bookingID ){
 
-		$b = new ReservationBooking( $this->getUser() );
+		$b = new ReservationBooking( $this->getUser(), $this->title );
 		$b->setID( $bookingID );
 //print_r( $newUnixTime );
 //print_r( $b->getUnixStart() );
@@ -320,6 +325,15 @@ class ReservationBooking extends ReservationObject {
 			'res_log_when'=>date("Y-m-d H:i:s", $unixWhen ),
 			'res_log_text'=>$text
 		);
+
+$logEntry = new ManualLogEntry( 'reservation', 'booking' ); // Log action 'booking' in the Special:Log for 'reservation'
+$logEntry->setPerformer( $this->getUser() ); // User object, the user who performed this action
+$logEntry->setTarget( $this->getTitle() ); // The page that this log entry affects, a Title object
+$logEntry->setComment( $text ); // Optional, user provided comment
+$logid = $logEntry->insert();
+$logEntry->publish( $logid );
+
+
 		return $db->insert( $table, $values );
 	}
 

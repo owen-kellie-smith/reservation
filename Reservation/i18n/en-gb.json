@@ -2,7 +2,10 @@
 	"@metadata": {
 		"authors": []
 	},
-	"reservation": "Reservation",
+	"log-name-reservation": "Blade booking log (in i18)",
+	"log-description-reservation": "Bookings made and cancelled (in i18)",
+	"reservation": "Blade booking",
+	"reservationlog": "Blade booking log",
 	"reservation-desc": "This extension provides a form for booking cores on blades",
 	"reservation-helloworld": "Book cores on blades",
 	"reservation-log-helloworld": "Log of core bookings (dumb page, does nothing)",
@@ -43,7 +46,7 @@
 	"reservation-message-could-not-book": "The system could not make your booking.",
 "reservation-message-quantity-not-set":"Quantity / duration / deferral not set? Could not make any booking.", 
 	"reservation-section-usage-person": "==Usage by person==",
-	"reservation-section-log": "==Latest log==",
+	"reservation-section-log": "See [[Special:Log]] for a log of changes to the database",
 	"reservation-section-available-cores": "==Where the most cores are available now==",
 	"reservation-section-cores-booked": "==Cores booked out for immediate use==",
 	"reservation-section-future-bookings": "==Future bookings==",

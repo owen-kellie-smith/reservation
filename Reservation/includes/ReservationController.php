@@ -34,6 +34,7 @@ class ReservationController  {
 
 	private $messages; 
 	private $user;
+	private $title;
 	private $unitMultiplier = 2; // units in dropdown go up in powers of this multiplier
 	private $maxBookingDurationInHours = 168;
 	private $maxBookingDeferralInDays = 60;
@@ -42,8 +43,9 @@ class ReservationController  {
 	private $dateFormatUnixToLabel = "H:i D d-M-Y";
 	private $dateFormatMySQL = "%H:%i %a %d-%b-%Y";
 
-	public function __construct( User $user ){
+	public function __construct( User $user, Title $title ){
 		$this->user = $user;
+		$this->title = $title;
 //echo "user " . print_r($user->getName(),1) . print_r( $user->getRights(),1 );
 		$this->messages = array();
 	}
@@ -253,7 +255,7 @@ class ReservationController  {
 
 	private function processPost( $p) {
 		if( isset( $p['order'] )){
-			$b = new ReservationBooking( $this->user );
+			$b = new ReservationBooking( $this->user, $this->title );
 			if ( 'add_booking_overnight' == $p['order'] ){
 				$this->messages[] = $b->submitBookingOvernight( $p );
 			} else if ( 'add_booking' == $p['order'] ){
@@ -324,7 +326,7 @@ class ReservationController  {
 	}
 
   private function get_duration_labels(){
-		$b = new ReservationBooking( $this->user );
+		$b = new ReservationBooking( $this->user, $this->title );
 		$scale = 60 / $b->getMinPerInt();
 			$rsort = array();
 				for ($i=0, $ii=$scale * $this->maxBookingDurationInHours; $i < $ii; $i++){

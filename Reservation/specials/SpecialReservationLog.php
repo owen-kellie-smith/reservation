@@ -52,7 +52,7 @@ class SpecialReservationLog extends SpecialPage {
 	}
 
 	private function getReservations(){
-		$m = new ReservationController( $this->getUser() );
+		$m = new ReservationController( $this->getUser(), $this->getTitle() );
 		return $m->get_controller($this->getRequest()->getValues()) ; 
 	}
 
@@ -138,7 +138,7 @@ class SpecialReservationLog extends SpecialPage {
 		}
 		if (isset($res['log'])){
 			$out->addWikiMsg( 'reservation-section-log' );
-            		$out->addHTML( $res['log'] );
+//            		$out->addHTML( $res['log'] );
 		}
 	}
 }
