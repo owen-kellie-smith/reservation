@@ -38,7 +38,7 @@ class ReservationController  {
 	private $unitMultiplier = 2; // units in dropdown go up in powers of this multiplier
 	private $maxBookingDurationInHours = 168;
 	private $maxBookingDeferralInDays = 60;
-	private $marginInSeconds=59; // time to allow database to write
+	private $marginInSeconds=10; // time to allow database to write
 	private $blankTime = "";
 	private $dateFormatUnixToLabel = "H:i D d-M-Y";
 	private $dateFormatMySQL = "%H:%i %a %d-%b-%Y";
@@ -205,7 +205,7 @@ class ReservationController  {
 			$vars,
 			array(
 				'res_booking_resource_id=res_resource_id' ,
-				"res_booking_end > DATE_SUB( now(), INTERVAL " . $marginInSeconds . " SECOND )",
+				"res_booking_end > DATE_ADD( now(), INTERVAL " . $marginInSeconds . " SECOND )",
 				"res_booking_start < DATE_ADD( now(), INTERVAL " . $marginInSeconds . " SECOND)",
 				),
 			__METHOD__,
