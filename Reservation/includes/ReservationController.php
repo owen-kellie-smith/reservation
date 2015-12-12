@@ -197,23 +197,27 @@ class ReservationController  {
 		$ret = array();
 		$db = new ReservationDBInterface();
               	$vars = array(	'res_resource_name', 
-				'unit_hours'=>'SUM(res_booking_units)',
+				'unit_hours'=>'SUM(IFNULL(res_booking_units,0)
+			 * IFNULL(res_booking_end > DATE_ADD( now(), INTERVAL ' . $marginInSeconds . ' SECOND ), 0)
+			* IFNULL(res_booking_start < DATE_ADD( now(), INTERVAL ' . $marginInSeconds . ' SECOND),0)
+			)',
 			);
 //print_r($vars);
 		$res = $db->select(
 			array('res_resource','res_booking'), 
 			$vars,
-			array(
-				'res_booking_resource_id=res_resource_id' ,
-				"res_booking_end > DATE_ADD( now(), INTERVAL " . $marginInSeconds . " SECOND )",
-				"res_booking_start < DATE_ADD( now(), INTERVAL " . $marginInSeconds . " SECOND)",
-				),
+			array(),
 			__METHOD__,
 			array( 
 				'GROUP BY'=> array('res_resource_id'),
 			 	'ORDER BY'=> array('res_resource_name'),
+			),
+			array(
+				'res_booking'=>array(
+					'LEFT JOIN',
+					'res_booking_resource_id=res_resource_id'
+				)
 			)
-
 			);
 		$ret['data'] = $res;
 		$ret['header'] = array(
