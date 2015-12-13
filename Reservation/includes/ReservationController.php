@@ -201,12 +201,13 @@ class ReservationController  {
 			 * IFNULL(res_booking_end > DATE_ADD( now(), INTERVAL ' . $marginInSeconds . ' SECOND ), 0)
 			* IFNULL(res_booking_start < DATE_ADD( now(), INTERVAL ' . $marginInSeconds . ' SECOND),0)
 			)',
+			'res_group_name',
 			);
 //print_r($vars);
 		$res = $db->select(
-			array('res_resource','res_booking'), 
+			array('res_group','res_resource','res_booking'), 
 			$vars,
-			array(),
+			array('res_resource_group_id=res_group_id'),
 			__METHOD__,
 			array( 
 				'GROUP BY'=> array('res_resource_id'),
@@ -223,6 +224,7 @@ class ReservationController  {
 		$ret['header'] = array(
 						wfMessage('reservation-label-blade')->text(),
 						wfMessage('reservation-label-cores')->text(),
+						wfMessage('reservation-label-group-name')->text(),
 		);
 		return $ret;
 	}

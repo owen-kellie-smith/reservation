@@ -125,15 +125,15 @@ class SpecialReservationLog extends SpecialPage {
 			$out->addWikiText("==Future bookings==");
             		$out->addHTML( $res['bookings'] );
 		}
-*/
 		if (isset($res['all-blades'])){
 			$out->addWikiMsg( 'reservation-section-blades-available-for-anyone' );
 			$out->addWikiMsg( 'reservation-section-blades-see-sysop' );
             		$out->addHTML( $res['all-blades'] );
+			$out->addWikiMsg( 'reservation-section-usage-person' );
 		}
+*/
 		if (isset($res['usage'])){
 
-			$out->addWikiMsg( 'reservation-section-usage-person' );
             		$out->addHTML( $res['usage'] );
 		}
 		if (isset($res['log'])){

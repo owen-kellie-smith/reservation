@@ -125,17 +125,18 @@ class SpecialReservation extends SpecialPage {
 		if (isset($res['current-usage'])){
 			$out->addWikiMsg( 'reservation-section-cores-booked' );
             		$out->addHTML( $res['current-usage'] );
+			$out->addWikiMsg( 'reservation-see-userrights' );
 		}
 		if (isset($res['bookings'])){
 			$out->addWikiMsg( 'reservation-section-future-bookings' );
             		$out->addHTML( $res['bookings'] );
 		}
+/*
 		if (isset($res['your-blades'])){
 			$out->addWikiMsg( 'reservation-section-blades-available-for-you' );
 			$out->addWikiMsg( 'reservation-see-userrights' );
             		$out->addHTML( $res['your-blades'] );
 		}
-/*
 		if (isset($res['usage'])){
 			$out->addWikiText("==Usage by person==");
             		$out->addHTML( $res['usage'] );
