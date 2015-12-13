@@ -425,7 +425,7 @@ class ReservationController  {
 		$r = array();
 		$r['label']='If necessary, take space (with explicit consent) from ';
 		$b = new ReservationBeneficiary( $this->user );
-		$r['content']=array_merge( array(-999=>wfMessage('reservation-label-no-one')->text()), $b->getDisallowedGroups());
+		$r['content']= array(-999=>wfMessage('reservation-label-no-one')->text()) + $b->getDisallowedGroups();
 		$r['name']='take-from-group';
 		return $r;
 	}
