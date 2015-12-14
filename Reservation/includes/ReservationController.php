@@ -349,7 +349,7 @@ class ReservationController  {
 		$b = new ReservationBooking( $this->user, $this->title );
 		$scale = 60 / $b->getMinPerInt();
 			$rsort = array();
-			for ($i=-1, $ii=$scale * $this->maxBookingDurationInHours; $i < $ii; $i++){
+			for ($i=0, $ii=$scale * $this->maxBookingDurationInHours; $i < $ii; $i++){
 				$label = null;
 				if (-1 == $i){
 					$label = wfMessage('reservation-label-a-few-moments')->text();

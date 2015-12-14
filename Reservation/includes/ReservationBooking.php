@@ -234,7 +234,11 @@ class ReservationBooking extends ReservationObject {
 			isset( $p['duration'] ) &&
 			isset( $p['deferral'] ) ){
 			$_now = time();
-			$p['unixStart'] =  $_now + $this->secondsFromHours( $p['deferral'] );
+			if ( $p['deferral'] > 0 ){
+				$p['unixStart'] =  $this->roundedUpUnixTime( $_now + $this->secondsFromHours( $p['deferral'] ));
+			} else {
+				$p['unixStart'] =  $_now + $this->secondsFromHours( $p['deferral'] );
+			}
 			$p['unixEnd'] = $this->roundedUpUnixTime( $p['unixStart']) + $this->secondsFromHours( $p['duration'] ) ;
   			return $this->submitBookingFixedStartStop( $p );
 		} else {
