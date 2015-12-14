@@ -50,7 +50,6 @@ Reservation_autoloader(  		"HTML_Common", "PEAR/HTML/Common.php");
 Reservation_autoloader(  		"HTML_Table", "PEAR/HTML/Table.php");
 Reservation_autoloader(		"Validate", "PEAR/Validate.php");
 Reservation_autoloader(		"ReservationObject", "includes/ReservationObject.php");
-Reservation_autoloader(		"ReservationConcept",	"includes/ReservationConcept.php");
 Reservation_autoloader(		"ReservationController", "includes/ReservationController.php");
 //Reservation_autoloader(		"ReservationXML", "includes/ReservationXML.php");
 //Reservation_autoloader(		"ReservationResource", "includes/ReservationResource.php");
