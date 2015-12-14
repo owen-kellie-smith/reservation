@@ -54,8 +54,24 @@ class SpecialReservation extends SpecialPage {
 		return 'other';
 	}
 
+	private function getOptions(){
+		global $wgResBooking;
+		$options = array('borrow'=>true, 'deferral'=>true );
+		if (isset ($wgResBooking['borrow']) ){
+			if (!$wgResBooking['borrow'] ){
+				$options['borrow'] = false;
+			}
+		}
+		if (isset ($wgResBooking['deferral']) ){
+			if (!$wgResBooking['deferral'] ){
+				$options['deferral'] = false;
+			}
+		}
+		return $options;
+	}
+
 	private function getReservations(){
-		$m = new ReservationController( $this->getUser(), $this->getTitle() );
+		$m = new ReservationController( $this->getUser(), $this->getTitle() , $this->getOptions() );
 		return $m->get_controller($this->getRequest()->getValues()) ; 
 	}
 

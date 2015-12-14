@@ -35,6 +35,7 @@ class ReservationController  {
 	private $messages; 
 	private $user;
 	private $title;
+	private $options;
 	private $unitMultiplier = 2; // units in dropdown go up in powers of this multiplier
 	private $maxBookingDurationInHours = 168;
 	private $maxBookingDeferralInDays = 60;
@@ -43,11 +44,18 @@ class ReservationController  {
 	private $dateFormatUnixToLabel = "H:i D d-M-Y";
 	private $dateFormatMySQL = "%H:%i %a %d-%b-%Y";
 
-	public function __construct( User $user, Title $title ){
+	public function __construct( User $user, Title $title, $options=array('borrowing'=>true, 'deferral'=>true) ){
 		$this->user = $user;
 		$this->title = $title;
 //echo "user " . print_r($user->getName(),1) . print_r( $user->getRights(),1 );
 		$this->messages = array();
+		if( !isset( $options['deferral']) ){
+			$options['deferral'] = true;
+		}
+		if( !isset( $options['borrowing']) ){
+			$options['borrowing'] = true;
+		}
+		$this->options=$options;
 	}
 
 	public function get_controller( $parameters) {
@@ -59,7 +67,7 @@ class ReservationController  {
 		$result['output']['unrendered']['table'] = $this->getTables(); 
 	if ($this->getUser()->isLoggedIn()){
 	  $result['output']['unrendered']['forms'][] = array(
-			'content'=> $this->get_booking_form( NULL ),
+			'content'=> $this->get_booking_form(  NULL ),
 			'type'=>'select',
 			);
 	  $result['output']['unrendered']['forms'][] = array(
@@ -260,6 +268,12 @@ class ReservationController  {
 	}
 
 	private function processPost( $p) {
+		if( !$this->options['borrow'] ){
+			$p['take-from-group'] = -999;
+		}
+		if( !$this->options['deferral'] ){
+			$p['deferral'] = 0;
+		}
 		if( isset( $p['order'] )){
 			$b = new ReservationBooking( $this->user, $this->title );
 			if ( 'add_booking_overnight' == $p['order'] ){
@@ -403,12 +417,16 @@ class ReservationController  {
 		$p['select'][3]['select-options'] = $this->get_duration_labels() ;
 		$p['select'][3]['select-name'] = 'duration';
 		$p['select'][3]['select-label'] = self::myMessage(  'res-select-duration');
-		$p['select'][4]['select-options'] = $this->get_deferral_labels() ;
-		$p['select'][4]['select-name'] = 'deferral';
-		$p['select'][4]['select-label'] = self::myMessage(  'res-select-deferral');
+		if( $this->options['deferral'] ){
+			$p['select'][4]['select-options'] = $this->get_deferral_labels() ;
+			$p['select'][4]['select-name'] = 'deferral';
+			$p['select'][4]['select-label'] = self::myMessage(  'res-select-deferral');
+		}
 		$p['order'] = 'add_booking';
 		$p['formLabel'] = wfMessage('reservation-label-new-booking')->text();
-		$p['radio'] = $this->get_radio_buttons_to_override_booking_groups();
+		if( $this->options['borrow'] ){
+			$p['radio'] = $this->get_radio_buttons_to_override_booking_groups();
+		}
 		return $p;
 	}
 
@@ -419,7 +437,9 @@ class ReservationController  {
 		$p['select'][1]['select-label'] = self::myMessage(  'res-select-quantity');
 		$p['order'] = 'add_booking_overnight';
 		$p['formLabel'] = wfMessage('reservation-label-new-overnight-booking')->text();
-		$p['radio'] = $this->get_radio_buttons_to_override_booking_groups();
+		if( $this->options['borrow'] ){
+			$p['radio'] = $this->get_radio_buttons_to_override_booking_groups();
+		}
 		return $p;
 	}
 
