@@ -425,7 +425,7 @@ class ReservationController  {
 
 	private function get_radio_buttons_to_override_booking_groups(){
 		$r = array();
-		$r['label']='If necessary, take space (with explicit consent) from ';
+		$r['label']=wfMessage('reservation-label-take-space')->text();
 		$b = new ReservationBeneficiary( $this->user );
 		$r['content']= array(-999=>wfMessage('reservation-label-no-one')->text()) + $b->getDisallowedGroups();
 		$r['name']='take-from-group';
