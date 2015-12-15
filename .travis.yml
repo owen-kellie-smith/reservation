@@ -1,3 +1,5 @@
+sudo: required
+
 language: php
 php:
   - 5.3
@@ -8,4 +10,4 @@ services:
   - mysql
 
 before_install:
-  - mysql -e "create database IF NOT EXISTS myapp-test;" 
+  - mysql -e "create database IF NOT EXISTS myapp_test;" 
