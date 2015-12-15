@@ -19,6 +19,7 @@ before_script:
   - tar -zxf ${MW}.tar.gz
   - mv mediawiki-${MW} mediawiki-core
   - cd mediawiki-core
+  - composer install --no-dev
   - export MW_INSTALL_PATH=$(pwd)
   - mysql -e 'create database its_a_mw;'
   - php maintenance/install.php --dbtype ${DBTYPE} --dbuser root --dbname its_a_mw --dbpath $(pwd) --pass nyan TravisWiki admin
