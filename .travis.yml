@@ -1,0 +1,11 @@
+language: php
+php:
+  - 5.3
+  - 5.4
+  - 5.5
+
+services:
+  - mysql
+
+before_install:
+  - mysql -e "create database IF NOT EXISTS myapp-test;" 
