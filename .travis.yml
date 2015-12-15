@@ -1,0 +1,51 @@
+language: php
+# hack of https://github.com/wmde/WikidataBuildResources/blob/master/.travis.yml
+
+php:
+  - "5.3"
+  - "5.4"
+  - "5.5"
+
+env:
+  matrix:
+# As new versions of mediawiki are released they should be added to the matrix
+    - MW=master DBTYPE=mysql
+
+before_script:
+  - set -x
+  - originalDirectory=$(pwd)
+  - cd ..
+  - wget https://github.com/wikimedia/mediawiki/archive/$MW.tar.gz
+  - tar -zxf ${MW}.tar.gz
+  - mv mediawiki-${MW} mediawiki-core
+  - cd mediawiki-core
+  - export MW_INSTALL_PATH=$(pwd)
+  - mysql -e 'create database its_a_mw;'
+  - php maintenance/install.php --dbtype ${DBTYPE} --dbuser root --dbname its_a_mw --dbpath $(pwd) --pass nyan TravisWiki admin
+  - cd extensions
+  - cp -r ${originalDirectory}/Reservation Reservation
+  - cd ..
+  
+  - echo 'error_reporting(E_ALL| E_STRICT);' >> LocalSettings.php
+  - echo 'ini_set("display_errors", 1);' >> LocalSettings.php
+  - echo '$wgShowExceptionDetails = true;' >> LocalSettings.php
+  - echo '$wgDevelopmentWarnings = true;' >> LocalSettings.php
+  - echo '$wgLanguageCode = "'en'";' >> LocalSettings.php
+  - echo "define( 'WB_EXPERIMENTAL_FEATURES', true );" >> LocalSettings.php
+  
+  - echo "wfLoadExtension( 'Reservation' );" >> LocalSettings.php
+  - echo "$wgAvailableRights[] = 'blade-prophet-dev';" >> LocalSettings.php
+  - echo "$wgAvailableRights[] = 'blade-production';" >> LocalSettings.php
+  - echo "$wgAvailableRights[] = 'blade-ALS';" >> LocalSettings.php
+  - echo "$wgGroupPermissions['Prophet-dev']['blade-prophet-dev'] = true;" >> LocalSettings.php
+  - echo "$wgGroupPermissions['Production']['blade-production'] = true;" >> LocalSettings.php
+  - echo "$wgGroupPermissions['ALS']['blade-ALS'] = true;" >> LocalSettings.php
+  - echo "$wgLogTypes[] = 'reservation';" >> LocalSettings.php
+  - echo "$wgLogActionsHandlers['reservation/*'] = 'LogFormatter';" >> LocalSettings.php
+  
+  - php maintenance/update.php --quick
+
+script:
+  - set -x
+  - cd ../mediawiki-core/tests/phpunit
+  - php phpunit.php --group Reservation

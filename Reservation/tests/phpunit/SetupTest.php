@@ -29,7 +29,6 @@ class FinMathXML_Test extends MediaWikiTestCase{
 
   public function setup(){ 
 	parent::setUp();
-	
 	}
 
   public function tearDown(){
