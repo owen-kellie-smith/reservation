@@ -21,20 +21,28 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * @file
  */
 
+class FinMathXML_Test extends MediaWikiTestCase{
+  
+	private $unused;
 
-class ReservationHooks {
-
-	public static function mySchemaUpdate(DatabaseUpdater $updater ) {
-		$updater->addExtensionTable( 'tablename',
-			__DIR__ . '/table.sql' );
-		return true;
+  public function setup(){ 
+	parent::setUp();
 	}
 
-	public static function onUnitTestsList( &$files ) {
-		$files = array_merge( $files, glob( __DIR__ . '/phpunit-tests/*Test.php' ) );
-		return true;
+  public function tearDown(){
+	parent::tearDown();
 	}
+  
+  public function test_php_function_exists () {
+		$test = function_exists( 'print_r' );
+		$this->assertTrue(  $test );
+  }  
+
+  public function test_MediaWiki_function_exists () {
+		$test = function_exists( 'wfMessage' );
+		$this->assertTrue(  $test );
+  }  
+
 }

@@ -33,6 +33,8 @@ foreach ( array( '',
 	set_include_path(get_include_path(). PATH_SEPARATOR. dirname(__FILE__). "/". $_dir. $path );
 }
 
+set_include_path(get_include_path(). PATH_SEPARATOR. "/home/owen/public_html/mediawiki/wiki/includes/");
+
 function Reservation_autoloader($class, $file){
 	if (!class_exists($class) && !interface_exists($class)){
 		require_once ($file);
@@ -44,6 +46,7 @@ function Reservation_autoloader($class, $file){
 }
 
 // if class A requires class B then put the Reservation_autoloader call to class A below the call to class B
+Reservation_autoloader("MediaWiki","MediaWiki.php");
 Reservation_autoloader("HTML_QuickForm2",$_dir . "/PEAR/HTML/QuickForm2.php");
 Reservation_autoloader("Validate", $_dir  . "/PEAR/Validate.php");
 Reservation_autoloader(  		"HTML_Common", "PEAR/HTML/Common.php");
@@ -51,12 +54,7 @@ Reservation_autoloader(  		"HTML_Table", "PEAR/HTML/Table.php");
 Reservation_autoloader(		"Validate", "PEAR/Validate.php");
 Reservation_autoloader(		"ReservationObject", "includes/ReservationObject.php");
 Reservation_autoloader(		"ReservationController", "includes/ReservationController.php");
-//Reservation_autoloader(		"ReservationXML", "includes/ReservationXML.php");
-//Reservation_autoloader(		"ReservationResource", "includes/ReservationResource.php");
 //Reservation_autoloader(		"ReservationBooking",	"includes/ReservationBooking.php");
-//Reservation_autoloader(		"ReservationCollection", "includes/ReservationCollection.php");
-//Reservation_autoloader(		"ReservationResources", "includes/ReservationResources.php");
-//Reservation_autoloader(		"ReservationBookings", "includes/ReservationBookings.php");
 //Reservation_autoloader(		"ReservationRender", "includes/ReservationRender.php");
 
 	

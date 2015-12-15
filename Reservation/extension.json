@@ -39,6 +39,9 @@
 	"Hooks": {
 		"LoadExtensionSchemaUpdates": [
 			"ReservationHooks::mySchemaUpdate"
+		],
+		"UnitTestsList": [
+			"ReservationHooks::onUnitTestsList"
 		]
 	},
 	"MessagesDirs": {
