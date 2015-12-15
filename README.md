@@ -19,5 +19,9 @@ This extension provides a special page which renders forms that enable the booki
 1. Add  wfLoadExtension( 'Reservation' );   to your LocalSettings.php.
 1. Go to the new Special page (check in the special pages for "Reservation").
 
+## How to run the unit tests
+
+1. In your MediaWiki core folder, run (in the command line)
+    php tests/phpunit/phpunit.php extensions/Reservation/tests/phpunit/
 
 
