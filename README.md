@@ -1,5 +1,5 @@
 # reservation
-Mediawiki extension to reserve resources
+Mediawiki extension to reserve resources e.g. cores on a computer
 
 Requires at least: Mediawiki 1.25
 
