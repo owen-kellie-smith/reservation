@@ -12,5 +12,4 @@ services:
 before_install:
   - mysql -e "create database IF NOT EXISTS myapp_test;" 
 
-install: ./install.sh
 	
