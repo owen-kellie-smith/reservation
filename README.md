@@ -9,11 +9,9 @@ License URI: https://opensource.org/licenses/MIT
 
 Code is at:https://github.com/owen-kellie-smith/reservation/
 
-A wiki using the extension, running MediaWiki 1.25.2 is at http://mediawiki-treaties.rhcloud.com/wiki .
-
 ## Description 
 
-This extension provides a special page which renders forms that enable the booking of resources (e.g. a meeting room or cores on a computer).
+This extension provides a special page which renders forms that enable the booking of homogeneous resources (e.g. cores on a computer).
 
 ## Installation
 
