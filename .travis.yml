@@ -51,4 +51,5 @@ script:
   - set -x
   - cd ../mediawiki-core/
   - ls tests/phpunit
+  - phpunit extensions/Reservation/tests/phpunit/
   - php tests/phpunit/phpunit.php extensions/Reservation/tests/phpunit/
