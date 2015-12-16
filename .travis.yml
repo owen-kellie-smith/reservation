@@ -3,8 +3,6 @@ language: php
 
 php:
   - "5.3"
-  - "5.4"
-  - "5.5"
 
 env:
   matrix:
@@ -21,9 +19,6 @@ before_script:
   - cd mediawiki-core
   - composer self-update
   - composer install --no-dev
-  - export MW_INSTALL_PATH=$(pwd)
-  - mysql -e 'create database its_a_mw;'
-  - php maintenance/install.php --dbtype ${DBTYPE} --dbuser root --dbname its_a_mw --dbpath $(pwd) --pass nyan TravisWiki admin
   - cd extensions
   - cp -r ${originalDirectory}/Reservation Reservation
   - cd ..
@@ -33,23 +28,10 @@ before_script:
   - echo '$wgShowExceptionDetails = true;' >> LocalSettings.php
   - echo '$wgDevelopmentWarnings = true;' >> LocalSettings.php
   - echo '$wgLanguageCode = "'en'";' >> LocalSettings.php
-  - echo "define( 'WB_EXPERIMENTAL_FEATURES', true );" >> LocalSettings.php
   
   - echo "wfLoadExtension( 'Reservation' );" >> LocalSettings.php
-#  - echo "$wgAvailableRights[] = 'blade-prophet-dev';" >> LocalSettings.php
-#  - echo "$wgAvailableRights[] = 'blade-production';" >> LocalSettings.php
-#  - echo "$wgAvailableRights[] = 'blade-ALS';" >> LocalSettings.php
-#  - echo "$wgGroupPermissions['Prophet-dev']['blade-prophet-dev'] = true;" >> LocalSettings.php
-#  - echo "$wgGroupPermissions['Production']['blade-production'] = true;" >> LocalSettings.php
-#  - echo "$wgGroupPermissions['ALS']['blade-ALS'] = true;" >> LocalSettings.php
-#  - echo "$wgLogTypes[] = 'reservation';" >> LocalSettings.php
-#  - echo "$wgLogActionsHandlers['reservation/*'] = 'LogFormatter';" >> LocalSettings.php
-  
-  - php maintenance/update.php --quick
 
 script:
   - set -x
   - cd ../mediawiki-core/
-  - ls tests/phpunit
-  - phpunit extensions/Reservation/tests/phpunit/
   - php tests/phpunit/phpunit.php extensions/Reservation/tests/phpunit/
