@@ -19,8 +19,6 @@ before_script:
   - tar -zxf ${MW}.tar.gz
   - mv mediawiki-${MW} mediawiki-core
   - cd mediawiki-core
-  - composer self-update
-  - composer install --no-dev
   - export MW_INSTALL_PATH=$(pwd)
   - mysql -e 'create database its_a_mw;'
   - php maintenance/install.php --dbtype ${DBTYPE} --dbuser root --dbname its_a_mw --dbpath $(pwd) --pass nyan TravisWiki admin
@@ -36,14 +34,14 @@ before_script:
   - echo "define( 'WB_EXPERIMENTAL_FEATURES', true );" >> LocalSettings.php
   
   - echo "wfLoadExtension( 'Reservation' );" >> LocalSettings.php
-#  - echo "$wgAvailableRights[] = 'blade-prophet-dev';" >> LocalSettings.php
-#  - echo "$wgAvailableRights[] = 'blade-production';" >> LocalSettings.php
-#  - echo "$wgAvailableRights[] = 'blade-ALS';" >> LocalSettings.php
-#  - echo "$wgGroupPermissions['Prophet-dev']['blade-prophet-dev'] = true;" >> LocalSettings.php
-#  - echo "$wgGroupPermissions['Production']['blade-production'] = true;" >> LocalSettings.php
-#  - echo "$wgGroupPermissions['ALS']['blade-ALS'] = true;" >> LocalSettings.php
-#  - echo "$wgLogTypes[] = 'reservation';" >> LocalSettings.php
-#  - echo "$wgLogActionsHandlers['reservation/*'] = 'LogFormatter';" >> LocalSettings.php
+  - echo "$wgAvailableRights[] = 'blade-prophet-dev';" >> LocalSettings.php
+  - echo "$wgAvailableRights[] = 'blade-production';" >> LocalSettings.php
+  - echo "$wgAvailableRights[] = 'blade-ALS';" >> LocalSettings.php
+  - echo "$wgGroupPermissions['Prophet-dev']['blade-prophet-dev'] = true;" >> LocalSettings.php
+  - echo "$wgGroupPermissions['Production']['blade-production'] = true;" >> LocalSettings.php
+  - echo "$wgGroupPermissions['ALS']['blade-ALS'] = true;" >> LocalSettings.php
+  - echo "$wgLogTypes[] = 'reservation';" >> LocalSettings.php
+  - echo "$wgLogActionsHandlers['reservation/*'] = 'LogFormatter';" >> LocalSettings.php
   
   - php maintenance/update.php --quick
 
