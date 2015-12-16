@@ -50,4 +50,5 @@ before_script:
 script:
   - set -x
   - cd ../mediawiki-core/
+  - ls tests/phpunit
   - php tests/phpunit/phpunit.php extensions/Reservation/tests/phpunit/
