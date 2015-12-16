@@ -11,6 +11,7 @@ env:
 
 before_script:
   - set -x
+  - apt-get install phpunit
   - originalDirectory=$(pwd)
   - cd ..
   - wget https://github.com/wikimedia/mediawiki/archive/$MW.tar.gz
