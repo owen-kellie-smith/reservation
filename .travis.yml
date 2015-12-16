@@ -49,5 +49,5 @@ before_script:
 
 script:
   - set -x
-  - cd ../mediawiki-core/tests/phpunit
-  - php phpunit.php --group Reservation
+  - cd ../mediawiki-core/
+  - php tests/phpunit/phpunit.php extensions/Reservation/tests/phpunit/
