@@ -12,7 +12,8 @@ env:
 
 before_script:
   - set -x
-  - sudo apt-get install phpunit
+#  - sudo apt-get install phpunit
+  - composer global require "phpunit/phpunit=5.0.*"
   - originalDirectory=$(pwd)
   - cd ..
   - wget https://github.com/wikimedia/mediawiki/archive/$MW.tar.gz
