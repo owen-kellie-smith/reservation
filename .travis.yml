@@ -16,8 +16,9 @@ before_script:
 #  - composer global require "phpunit/phpunit=5.0.*"
   - wget https://phar.phpunit.de/phpunit.phar
   - chmod +x phpunit.phar
-  - sudo mv phpunit.phar /usr/local/bin/phpunit
-  - ls /usr/local/bin/phpunit
+  - mv phpunit.phar Reservation/
+#  - sudo mv phpunit.phar /usr/local/bin/phpunit
+#  - ls /usr/local/bin/phpunit
   - phpunit --version
   - originalDirectory=$(pwd)
   - cd ..
@@ -42,4 +43,4 @@ before_script:
 script:
   - set -x
   - cd ../mediawiki-core/
-  - php tests/phpunit/phpunit.php --with-phpunitdir /usr/local/bin/phpunit extensions/Reservation/tests/phpunit/
+  - php tests/phpunit/phpunit.php --with-phpunitdir extensions/Reservation extensions/Reservation/tests/phpunit/
