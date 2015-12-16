@@ -2,7 +2,7 @@ language: php
 # hack of https://github.com/wmde/WikidataBuildResources/blob/master/.travis.yml
 
 php:
-  - "5.3"
+  - "5.5"
 
 env:
   matrix:
