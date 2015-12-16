@@ -21,9 +21,8 @@ This extension provides a special page which renders forms that enable the booki
 
 ## How to run the unit tests
 
-The unit tests overwrite newly created tables in the database, so first backup your reservation tables in the MediaWiki database, e.g. by running
-	mysql -s -N -u <MySQL username> -p --execute "SELECT table_name from information_schema.tables where table_schema='<MediaWiki database name>' and table_name like '%res\_%';" > table_names.txt
-	mysqldump -u <MySQL username> -p <MediaWiki database name> $(cat table_names.txt) > dumpRes.sql
+The unit tests overwrite newly created tables in the database, so first backup your reservation tables in the MediaWiki database.
+	mysqldump -u <MySQL username> -p <MediaWiki database name>  > dumpRes.sql
 
 Next run the unit test.  Go to your MediaWiki core folder, and run
     php tests/phpunit/phpunit.php extensions/Reservation/tests/phpunit/
