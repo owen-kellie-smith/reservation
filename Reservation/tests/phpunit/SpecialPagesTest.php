@@ -23,6 +23,9 @@
  * THE SOFTWARE.
  */
 
+/**
+ * @group Reservation
+ */
 class SpecialPageTest extends MediaWikiTestCase{
   
 	private $unused;

@@ -1,4 +1,4 @@
-<?php
+<?php   
 /**
  * The MIT License (MIT)
  *
@@ -23,27 +23,32 @@
  * THE SOFTWARE.
  */
 
-/**
- * @group Reservation
- */
-class ReservationControllerTest extends MediaWikiTestCase{
-  
-	private $unused;
-
-  public function setup(){ 
-	parent::setUp();
-	$u = new User();
-	$t = new Title();
-	$c = new ReservationController( $u, $t );
-	}
-
-  public function tearDown(){
-	parent::tearDown();
-	}
-  
-  public function test_MediaWiki_function_exists() {
-		$test = function_exists( 'wfMessage' );
-		$this->assertTrue(  $test );
-  }  
-
+$_dir = "";
+foreach ( array( '',
+	'/includes/',
+	'/PEAR/',
+	'/PEAR/HTML/',
+	'/PEAR/HTML/QuickForm2',
+	) AS $path ){
+	set_include_path(get_include_path(). PATH_SEPARATOR. dirname(__FILE__). "/". $_dir. $path );
 }
+
+function Reservationautoloader($class, $file){
+	if (!class_exists($class) && !interface_exists($class)){
+		require_once ($file);
+		if (!class_exists($class) && !interface_exists($class)){
+			throw new Exception("Can't instantiate " . $class . " from " . $file . " in ". __FILE__ );
+		}
+//		$o = new $class;
+	}
+}
+
+// if class A requires class B then put the Reservationautoloader call to class A below the call to class B
+Reservationautoloader("HTML_QuickForm2",$_dir . "/PEAR/HTML/QuickForm2.php");
+Reservationautoloader("Validate", $_dir  . "/PEAR/Validate.php");
+Reservationautoloader(  		"HTML_Table", "PEAR/HTML/Table.php");
+Reservationautoloader(		"Validate", "PEAR/Validate.php");
+Reservationautoloader(		"ReservationBooking", "includes/ReservationBooking.php");
+Reservationautoloader(		"ReservationController", "includes/ReservationController.php");
+
+	

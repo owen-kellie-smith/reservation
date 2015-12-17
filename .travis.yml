@@ -41,4 +41,4 @@ before_script:
 script:
   - set -x
   - cd ../mediawiki-core/
-  - php tests/phpunit/phpunit.php --with-phpunitdir extensions/Reservation extensions/Reservation/tests/phpunit/
+  - php tests/phpunit/phpunit.php --with-phpunitdir extensions/Reservation --configuration extensions/Reservation/suite.extensions.xml
