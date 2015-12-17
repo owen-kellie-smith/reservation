@@ -29,20 +29,37 @@ class FinMathXML_Test extends MediaWikiTestCase{
 
   public function setup(){ 
 	parent::setUp();
+	$u = new User();
+	$t = new Title();
+	$c = new ReservationController( $u, $t );
 	}
 
   public function tearDown(){
 	parent::tearDown();
 	}
   
-  public function test_php_function_exists () {
+  public function test_php_function_exists() {
 		$test = function_exists( 'print_r' );
 		$this->assertTrue(  $test );
   }  
 
-  public function test_MediaWiki_function_exists () {
+  public function test_MediaWiki_function_exists() {
 		$test = function_exists( 'wfMessage' );
 		$this->assertTrue(  $test );
   }  
 
+  public function test_special_page_runs() {
+		$s = new SpecialReservation();
+		$s->execute( null );
+		$o = $s->getOutput();
+//		$this->assertTrue(  $o );
+		$this->assertFalse(  empty($o->mPagetitle) );
+  }  
+
+  public function test_special_page_log_runs() {
+		$s = new SpecialReservationLog();
+		$s->execute( null );
+		$o = $s->getOutput();
+		$this->assertFalse(  empty($o->mPagetitle) );
+  }  
 }

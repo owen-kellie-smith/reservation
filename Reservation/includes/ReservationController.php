@@ -268,8 +268,12 @@ class ReservationController  {
 	}
 
 	private function processPost( $p) {
-		if( !$this->options['borrow'] ){
+		if( !isset( $this->options['borrow'] ) ){
 			$p['take-from-group'] = -999;
+		} else {
+			if( !$this->options['borrow'] ){
+				$p['take-from-group'] = -999;
+			}
 		}
 		if( !$this->options['deferral'] ){
 			$p['deferral'] = 0;
