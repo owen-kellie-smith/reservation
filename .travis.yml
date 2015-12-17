@@ -15,10 +15,10 @@ env:
 
 before_script:
   - set -x
-#  - wget https://phar.phpunit.de/phpunit.phar
-#  - chmod +x phpunit.phar
-#  - mv phpunit.phar Reservation/
-#  - originalDirectory=$(pwd)
+  - wget https://phar.phpunit.de/phpunit.phar
+  - chmod +x phpunit.phar
+  - mv phpunit.phar Reservation/
+  - originalDirectory=$(pwd)
   - cd ..
   - wget https://github.com/wikimedia/mediawiki/archive/$MW.tar.gz
   - tar -zxf ${MW}.tar.gz
@@ -31,9 +31,9 @@ before_script:
 
   - php maintenance/install.php --dbtype ${DBTYPE} --dbuser root --dbname myapp_test WikiName admin --pass adminPass
   - mysql myapp_test -e 'show tables;'
-#  - cd extensions
-#  - cp -r ${originalDirectory}/Reservation Reservation
-#  - cd ..
+  - cd extensions
+  - cp -r ${originalDirectory}/Reservation Reservation
+  - cd ..
 
 
   - echo '$wgDBtype = "mysql";' >> LocalSettings.php
@@ -45,10 +45,10 @@ before_script:
   - echo '$wgDevelopmentWarnings = true;' >> LocalSettings.php
   - echo '$wgLanguageCode = "'en'";' >> LocalSettings.php
   
-#  - echo "wfLoadExtension( 'Reservation' );" >> LocalSettings.php
+  - echo "wfLoadExtension( 'Reservation' );" >> LocalSettings.php
   - php maintenance/update.php
 
 script:
   - set -x
   - cd ../mediawiki-core/
-#  - php tests/phpunit/phpunit.php --with-phpunitdir extensions/Reservation --configuration extensions/Reservation/suite.extensions.xml
+  - php tests/phpunit/phpunit.php --with-phpunitdir extensions/Reservation --configuration extensions/Reservation/suite.extensions.xml
