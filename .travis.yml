@@ -26,10 +26,16 @@ before_script:
   - cd mediawiki-core
   - composer self-update
   - composer install --no-dev
+  - mysql -e 'create database myapp_test;'
+  - php maintenance/install.php --dbtype ${DBTYPE} --dbuser root --dbname mypp_test 
   - cd extensions
   - cp -r ${originalDirectory}/Reservation Reservation
   - cd ..
-  
+
+
+  - echo '$wgDBtype = "mysql";' >> LocalSettings.php
+  - echo '$wgDBserver = "localhost";' >> LocalSettings.php
+  - echo '$wgDBname = "myapp_test";' >> LocalSettings.php
   - echo 'error_reporting(E_ALL| E_STRICT);' >> LocalSettings.php
   - echo 'ini_set("display_errors", 1);' >> LocalSettings.php
   - echo '$wgShowExceptionDetails = true;' >> LocalSettings.php
