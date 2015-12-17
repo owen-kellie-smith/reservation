@@ -32,7 +32,9 @@ before_script:
   - php maintenance/install.php --dbtype ${DBTYPE} --dbuser root --dbname my_wiki WikiName admin --pass adminPass
   - cd extensions
   - cp -r ${originalDirectory}/Reservation Reservation
-  - cd ..
+  - cd Reservation
+  - mysql -u root my_wiki < table.sql
+  - cd ../../
 
 
   - echo '$wgDBtype = "mysql";' >> LocalSettings.php
