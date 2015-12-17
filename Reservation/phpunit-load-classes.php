@@ -43,11 +43,12 @@ function Reservationautoloader($class, $file){
 	}
 }
 
+$_dir = dirname(__FILE__);
 // if class A requires class B then put the Reservationautoloader call to class A below the call to class B
-Reservationautoloader("HTML_QuickForm2",$_dir . "/PEAR/HTML/QuickForm2.php");
-Reservationautoloader("Validate", $_dir  . "/PEAR/Validate.php");
-Reservationautoloader(  		"HTML_Table", "PEAR/HTML/Table.php");
-Reservationautoloader(		"Validate", "PEAR/Validate.php");
+//Reservationautoloader("HTML_QuickForm2",$_dir . "/PEAR/HTML/QuickForm2.php");
+//Reservationautoloader("Validate", $_dir  . "/PEAR/Validate.php");
+//Reservationautoloader(  		"HTML_Table", "PEAR/HTML/Table.php");
+//Reservationautoloader(		"Validate", "PEAR/Validate.php");
 Reservationautoloader(		"ReservationBooking", "includes/ReservationBooking.php");
 Reservationautoloader(		"ReservationController", "includes/ReservationController.php");
 
