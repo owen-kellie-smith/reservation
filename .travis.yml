@@ -29,7 +29,7 @@ before_script:
   - mysql -e 'create database myapp_test;'
   - mysql myapp_test -e 'show tables;'
 
-  - php maintenance/install.php --dbtype ${DBTYPE} --dbuser root --dbname mypp_test WikiName admin --pass adminPass
+  - php maintenance/install.php --dbtype ${DBTYPE} --dbuser root --dbname myapp_test WikiName admin --pass adminPass
   - mysql myapp_test -e 'show tables;'
 #  - cd extensions
 #  - cp -r ${originalDirectory}/Reservation Reservation
