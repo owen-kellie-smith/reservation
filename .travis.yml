@@ -26,20 +26,19 @@ before_script:
   - cd mediawiki-core
 #  - composer self-update
   - composer install --no-dev
-  - mysql -e 'create database myapp_test;'
-  - mysql myapp_test -e 'show tables;'
+  - mysql -e 'create database my_wiki;'
+  - mysql -e "grant all privileges on *.* to 'wikiuser'@'localhost';"
 
-  - php maintenance/install.php --dbtype ${DBTYPE} --dbuser root --dbname myapp_test WikiName admin --pass adminPass
-  - mysql myapp_test -e 'show tables;'
+  - php maintenance/install.php --dbtype ${DBTYPE} --dbuser wikiuser --dbname my_wiki WikiName admin --pass adminPass
   - cd extensions
   - cp -r ${originalDirectory}/Reservation Reservation
   - cd ..
 
 
   - echo '$wgDBtype = "mysql";' >> LocalSettings.php
-  - echo '$wgDBuser = "root";' >> LocalSettings.php
+  - echo '$wgDBuser = "wikiuser";' >> LocalSettings.php
   - echo '$wgDBserver = "localhost";' >> LocalSettings.php
-  - echo '$wgDBname = "myapp_test";' >> LocalSettings.php
+  - echo '$wgDBname = "my_wiki";' >> LocalSettings.php
   - echo 'error_reporting(E_ALL| E_STRICT);' >> LocalSettings.php
   - echo 'ini_set("display_errors", 1);' >> LocalSettings.php
   - echo '$wgShowExceptionDetails = true;' >> LocalSettings.php
