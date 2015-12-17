@@ -55,5 +55,7 @@ Reservationautoloader(		"ReservationBooking", "includes/ReservationBooking.php")
 Reservationautoloader(		"ReservationController", "includes/ReservationController.php");
 Reservationautoloader(		"ReservationRender", "includes/ReservationRender.php");
 Reservationautoloader(		"ReservationDBInterface", "includes/ReservationDBInterface.php");
+Reservationautoloader(		"SpecialReservation", "specials/SpecialReservation.php");
+Reservationautoloader(		"SpecialReservationLog", "specials/SpecialReservationLog.php");
 
 	
