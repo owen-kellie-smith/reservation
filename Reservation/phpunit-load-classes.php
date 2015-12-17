@@ -49,7 +49,11 @@ $_dir = dirname(__FILE__);
 //Reservationautoloader("Validate", $_dir  . "/PEAR/Validate.php");
 //Reservationautoloader(  		"HTML_Table", "PEAR/HTML/Table.php");
 //Reservationautoloader(		"Validate", "PEAR/Validate.php");
+Reservationautoloader(		"ReservationObject", "includes/ReservationObject.php");
+Reservationautoloader(		"ReservationBeneficiary", "includes/ReservationBeneficiary.php");
 Reservationautoloader(		"ReservationBooking", "includes/ReservationBooking.php");
 Reservationautoloader(		"ReservationController", "includes/ReservationController.php");
+Reservationautoloader(		"ReservationRender", "includes/ReservationRender.php");
+Reservationautoloader(		"ReservationDBInterface", "includes/ReservationDBInterface.php");
 
 	
