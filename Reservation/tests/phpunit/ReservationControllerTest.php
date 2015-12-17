@@ -23,7 +23,7 @@
  * THE SOFTWARE.
  */
 
-class FinMathXML_Test extends MediaWikiTestCase{
+class ReservationControllerTest extends MediaWikiTestCase{
   
 	private $unused;
 
@@ -38,28 +38,9 @@ class FinMathXML_Test extends MediaWikiTestCase{
 	parent::tearDown();
 	}
   
-  public function test_php_function_exists() {
-		$test = function_exists( 'print_r' );
-		$this->assertTrue(  $test );
-  }  
-
   public function test_MediaWiki_function_exists() {
 		$test = function_exists( 'wfMessage' );
 		$this->assertTrue(  $test );
   }  
 
-  public function test_special_page_runs() {
-		$s = new SpecialReservation();
-		$s->execute( null );
-		$o = $s->getOutput();
-//		$this->assertTrue(  $o );
-		$this->assertFalse(  empty($o->mPagetitle) );
-  }  
-
-  public function test_special_page_log_runs() {
-		$s = new SpecialReservationLog();
-		$s->execute( null );
-		$o = $s->getOutput();
-		$this->assertFalse(  empty($o->mPagetitle) );
-  }  
 }
