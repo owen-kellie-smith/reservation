@@ -34,6 +34,8 @@ before_script:
   - cp -r ${originalDirectory}/Reservation Reservation
   - cd Reservation
   - mysql -u root my_wiki < table.sql
+  - mysql -u root my_wiki -e "SELECT res_resource_name FROM res_resource;"
+  - mysql -u root my_wiki -e "SELECT res_group_right FROM res_group;"
   - cd ../../
 
 
