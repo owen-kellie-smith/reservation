@@ -27,7 +27,7 @@ before_script:
   - composer self-update
   - composer install --no-dev
   - mysql -e 'create database myapp_test;'
-  - php maintenance/install.php --dbtype ${DBTYPE} --dbuser root --dbname mypp_test 
+  - php maintenance/install.php --dbtype ${DBTYPE} --dbuser root --dbname mypp_test WikiName admin --pass adminPass
   - cd extensions
   - cp -r ${originalDirectory}/Reservation Reservation
   - cd ..
