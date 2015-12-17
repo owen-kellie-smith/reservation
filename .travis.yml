@@ -27,7 +27,7 @@ before_script:
 #  - composer self-update
   - composer install --no-dev
   - mysql -e 'create database my_wiki;'
-  - mysql -e "grant all privileges on *.* to 'wikiuser'@'localhost';"
+#  - mysql -e "grant all privileges on *.* to 'wikiuser'@'localhost';"
 
   - php maintenance/install.php --dbtype ${DBTYPE} --dbuser wikiuser --dbname my_wiki WikiName admin --pass adminPass
   - cd extensions
