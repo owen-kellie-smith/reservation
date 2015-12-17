@@ -58,4 +58,6 @@ Reservationautoloader(		"ReservationDBInterface", "includes/ReservationDBInterfa
 Reservationautoloader(		"SpecialReservation", "specials/SpecialReservation.php");
 Reservationautoloader(		"SpecialReservationLog", "specials/SpecialReservationLog.php");
 
+$wgExtensionMessagesFiles['ReservationAlias'] = __DIR__ . '/Reservation.i18n.alias.php';
+
 	
