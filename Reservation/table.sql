@@ -16,9 +16,11 @@ CREATE TABLE res_resource(
 	primary key (res_resource_id)  
 );
 
+
 DROP table IF EXISTS res_group;
 CREATE TABLE res_group(
 	res_group_id int not null auto_increment, 
+	res_group_right varchar(100) not null,
 	res_group_name varchar(100) not null,
 	primary key (res_group_id)  
 );
