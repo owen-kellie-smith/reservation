@@ -37,6 +37,7 @@ before_script:
 
 
   - echo '$wgDBtype = "mysql";' >> LocalSettings.php
+  - echo '$wgDBuser = "root";' >> LocalSettings.php
   - echo '$wgDBserver = "localhost";' >> LocalSettings.php
   - echo '$wgDBname = "myapp_test";' >> LocalSettings.php
   - echo 'error_reporting(E_ALL| E_STRICT);' >> LocalSettings.php
