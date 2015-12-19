@@ -91,6 +91,7 @@ class SpecialReservationLog extends SpecialPage {
 	}
 
 	private function outputReservations( &$out, $res ){
+/*
 		if (isset($res['messages'])){
 			if ( count( $res['messages'] ) > 0 ) {
 				foreach ( $res['messages']  AS $w ) {
@@ -105,6 +106,7 @@ class SpecialReservationLog extends SpecialPage {
 				}
 			}
 		}
+*/
 		$render = new ReservationRender();
 		if (isset($res['output']['unrendered'])){
 			$res = $render->get_rendered_result( 
@@ -136,8 +138,8 @@ class SpecialReservationLog extends SpecialPage {
 
             		$out->addHTML( $res['usage'] );
 		}
+		$out->addWikiMsg( 'reservation-section-log' );
 		if (isset($res['log'])){
-			$out->addWikiMsg( 'reservation-section-log' );
 //            		$out->addHTML( $res['log'] );
 		}
 	}

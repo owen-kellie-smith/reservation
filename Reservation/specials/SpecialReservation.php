@@ -46,7 +46,7 @@ class SpecialReservation extends SpecialPage {
 	public function execute( $unused ) {
 		$this->displayPage( $this->getOutput(), $this->getReservations() );
 		if( !empty($_POST) ){
-//			$this->getOutput()->redirect( $this->getTitle()->getFullURL() );
+			$this->getOutput()->redirect( $this->getTitle()->getFullURL() );
 		}
 	}
 
@@ -162,6 +162,7 @@ class SpecialReservation extends SpecialPage {
             		$out->addHTML( $res['log'] );
 		}
 */
-			$out->addWikiMsg( 'reservation-see-log' );
+		$out->addWikiMsg( 'reservation-section-log' );
+		$out->addWikiMsg( 'reservation-see-log' );
 	}
 }

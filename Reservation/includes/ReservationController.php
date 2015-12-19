@@ -32,7 +32,7 @@
  */
 class ReservationController  {
 
-	private $messages; 
+	private $messages;
 	private $user;
 	private $title;
 	private $options;
@@ -45,10 +45,10 @@ class ReservationController  {
 	private $dateFormatMySQL = "%H:%i %a %d-%b-%Y";
 
 	public function __construct( User $user, Title $title, $options=array('borrowing'=>true, 'deferral'=>true) ){
+		$this->messages = array();
 		$this->user = $user;
 		$this->title = $title;
 //echo "user " . print_r($user->getName(),1) . print_r( $user->getRights(),1 );
-		$this->messages = array();
 		if( !isset( $options['deferral']) ){
 			$options['deferral'] = true;
 		}
@@ -75,9 +75,11 @@ class ReservationController  {
 			'type'=>'select',
 			);
 	}
-		$result['messages'] = $this->messages;
+		$b = new ReservationBeneficiary( $this->user );
+		$result['messages'] = array_merge($this->messages, $b->getMessages());
 		return $result;
 	}
+
 
   private function getTables(){
 		$r = array();
@@ -288,6 +290,14 @@ class ReservationController  {
 				$this->messages[] = $b->cancelBooking( $p );
 			}
 		}
+		if (count( $this->messages ) > 0){
+			foreach ( $this->messages as $m){
+				if (isset( $m['type'] ) && isset( $m['message'] ) ){
+					$this->addMessage( $this->getUser()->getID(), time(), $m['message'], $m['type'] );
+				}
+			}
+		}
+//echo __FILE__ . " messages " . print_r($this->messages,1);
 	}
 
 	private static function myMessage( $messageKey){
@@ -428,8 +438,10 @@ class ReservationController  {
 		}
 		$p['order'] = 'add_booking';
 		$p['formLabel'] = wfMessage('reservation-label-new-booking')->text();
-		if( $this->options['borrow'] ){
-			$p['radio'] = $this->get_radio_buttons_to_override_booking_groups();
+		if( isset($this->options['borrow']) ){
+			if( $this->options['borrow'] ){
+				$p['radio'] = $this->get_radio_buttons_to_override_booking_groups();
+			}
 		}
 		return $p;
 	}
@@ -441,8 +453,10 @@ class ReservationController  {
 		$p['select'][1]['select-label'] = self::myMessage(  'res-select-quantity');
 		$p['order'] = 'add_booking_overnight';
 		$p['formLabel'] = wfMessage('reservation-label-new-overnight-booking')->text();
-		if( $this->options['borrow'] ){
-			$p['radio'] = $this->get_radio_buttons_to_override_booking_groups();
+		if( isset($this->options['borrow']) ){
+			if( $this->options['borrow'] ){
+				$p['radio'] = $this->get_radio_buttons_to_override_booking_groups();
+			}
 		}
 		return $p;
 	}
@@ -476,6 +490,29 @@ class ReservationController  {
 				)
 			));
 		return $res;
+	}
+
+	private function addMessage( $toWhomID, $unixWhen, $text, $type ){
+		$this->deleteOldMessages( $toWhomID );
+		$db = new ReservationDBInterface();
+		$table="res_message";
+		$values=array(
+			'res_message_user_id'=>$toWhomID,
+			'res_message_time'=>date("Y-m-d H:i:s", $unixWhen ),
+			'res_message_text'=>$text,
+			'res_message_type'=>$type,
+		);
+		return $db->insert( $table, $values );
+	}
+
+	private function deleteOldMessages( $toWhomID ){
+		$db = new ReservationDBInterface();
+		$table="res_message";
+		$conds=array(
+			'res_message_user_id'=>$toWhomID,
+			);
+
+		return $db->delete( $table, $conds );
 	}
 
 

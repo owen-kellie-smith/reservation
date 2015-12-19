@@ -34,6 +34,7 @@
 class ReservationBeneficiary extends ReservationObject {
 
 	private $user;
+	private $lagInSeconds = 60;
 
 	public function __construct( User $user){
 		$this->user = $user;
@@ -49,6 +50,33 @@ class ReservationBeneficiary extends ReservationObject {
 
 	public function getGroups(){
 		return $this->user->getGroups();
+	}
+
+	public function getMessages(){
+		$res = array();
+		$db = new ReservationDBInterface();
+		$vars = array(
+			'res_message_text',
+			'res_message_type',
+			);
+		$res = $db->select(
+			array('res_message'), 
+			$vars,
+			array(
+				'res_message_user_id'=>$this->user->getID(),
+				'res_message_time > DATE_SUB( now(), INTERVAL ' . $this->lagInSeconds . ' SECOND )',
+				)
+			);
+		$ret = array();
+		if ( count ( $res ) > 0 ){
+			foreach ( $res AS $row ){
+				$r['type'] = $row['res_message_type'];
+				$r['message'] = $row['res_message_text'];
+				$ret[] = $r;
+				$r = null;
+			}
+		}
+		return $ret;
 	}
 
 	public function getResourceRightList(){
@@ -89,11 +117,8 @@ class ReservationBeneficiary extends ReservationObject {
 
 	private function getDisallowedGroupIDs(){
 		$all = $this->getAllGroupIDs();
-//echo __FILE__ . " all " . print_r($all,1);
 		$mine = $this->getAllowableGroupIDs();
-//echo __FILE__ . " mine " . print_r($mine,1);
 		$res = array_diff($all, $mine);
-//echo __FILE__ . " res " . print_r($res,1);
 		return $res;
 	}
 

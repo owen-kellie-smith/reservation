@@ -30,6 +30,8 @@ CREATE TABLE res_message(
 	res_message_id int not null auto_increment, 
 	res_message_user_id int not null, 
 	res_message_text varchar(400) not null,
+	res_message_type varchar(50) not null,
+	res_message_time datetime not null,
 	primary key (res_message_id)  
 );
 

@@ -57,7 +57,7 @@
 	"reservation-section-blades-available-for-you": "==Blades available for you==",
 	"reservation-section-blades-available-for-anyone": "==Blades on the system==",
 	"reservation-see-userrights": "Available blades are determined by your user groups.  All the user groups are visible at [[Special:ListGroupRights]].  Contact anyone in the 'bureaucrat' group to be added to a user group.",
-	"reservation-see-log": "See [[Special:ReservationLog]] for log.",
+	"reservation-see-log": "See [[Special:ReservationLog]] for a summary of bookings by user.",
 	"reservation-see-bookings": "See [[Special:Reservation]] to make a new booking.",
 	"reservation-section-blades-see-sysop": "Available blades are determined by user group.  You can see all the user groups at [[Special:ListGroupRights]].  If you need to be added to a group please contact anyone in the Sysop / bureaucrat group.",
 "reservation-no-bookable-blades": "You don't have any bookable blades.  To get bookable blades, please contact someone in the Administrator group.",
