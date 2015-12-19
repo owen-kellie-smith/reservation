@@ -25,6 +25,14 @@ CREATE TABLE res_group(
 	primary key (res_group_id)  
 );
 
+DROP table IF EXISTS res_message;
+CREATE TABLE res_message(
+	res_message_id int not null auto_increment, 
+	res_message_user_id int not null, 
+	res_message_text varchar(400) not null,
+	primary key (res_message_id)  
+);
+
 #DROP table IF EXISTS res_beneficiary;
 #CREATE TABLE res_beneficiary(
 #	res_beneficiary_id int not null auto_increment, 
