@@ -17,6 +17,10 @@ env:
 
 before_script:
   - set -x
+  - pyrus install http://phptal.org/latest.tar.gz
+  - pear install pear/HTML_Table
+  - pear install pear/HTML_QuickForm2
+  - phpenv rehash
   - if [ ${php:0:1} == "7" ];
     then phpunitname='phpunit'; else
     phpunitname='phpunit-old';

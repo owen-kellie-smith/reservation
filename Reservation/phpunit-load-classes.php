@@ -26,9 +26,6 @@
 $_dir = "";
 foreach ( array( '',
 	'/includes/',
-	'/PEAR/',
-	'/PEAR/HTML/',
-	'/PEAR/HTML/QuickForm2',
 	) AS $path ){
 	set_include_path(get_include_path(). PATH_SEPARATOR. dirname(__FILE__). "/". $_dir. $path );
 }
