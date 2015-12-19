@@ -29,21 +29,24 @@
 class ReservationControllerTest extends MediaWikiTestCase{
   
 	private $unused;
+	private $c;
 
   public function setup(){ 
 	parent::setUp();
 	$u = new User();
 	$t = new Title();
-	$c = new ReservationController( $u, $t );
+	$this->c = new ReservationController( $u, $t );
 	}
 
   public function tearDown(){
 	parent::tearDown();
 	}
   
-  public function test_MediaWiki_function_exists() {
-		$test = function_exists( 'wfMessage' );
-		$this->assertTrue(  $test );
+  public function testPublicFunctionExist() {
+		$test1 = $this->c->get_controller( null );
+		$test2 = $this->c->getResourceRights();
+		$this->assertTrue(  is_array($test1) );
+		$this->assertTrue(  is_array($test2) );
   }  
 
 }
