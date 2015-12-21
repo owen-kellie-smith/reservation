@@ -283,10 +283,13 @@ class ReservationController  {
 		if( isset( $p['order'] )){
 			$b = new ReservationBooking( $this->user, $this->title );
 			if ( 'add_booking_overnight' == $p['order'] ){
+				$this->deleteOldMessages( $this->getUser()->getID() );
 				$this->messages[] = $b->submitBookingOvernight( $p );
 			} else if ( 'add_booking' == $p['order'] ){
+				$this->deleteOldMessages( $this->getUser()->getID() );
 				$this->messages[] = $b->submitBooking( $p );
 			} else if ( 'cancel_booking' == $p['order'] ){
+				$this->deleteOldMessages( $this->getUser()->getID() );
 				$this->messages[] = $b->cancelBooking( $p );
 			}
 		}
