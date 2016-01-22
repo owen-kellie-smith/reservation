@@ -10,6 +10,7 @@
 	"reservation-helloworld": "Book cores on blades",
 	"reservation-log-helloworld": "Log of core bookings (dumb page, does nothing)",
 	"reservation-helloworld-intro": "Welcome to the Reservation Form. Text shown here is in reservation-helloworld-intro in i18n/en-gbn.json.",
+"reservation-label-any-blade":"Any blade",
 "reservation-label-blade":"Blade",
 "reservation-label-current":"Current",
 "reservation-label-cancel":"Cancel this booking",
@@ -65,6 +66,7 @@
 	"reservation-log-message": "$1  $2 on $3 for $4 from $5 to $6",
 	"reservation-log-cancelled": "cancelled",
 	"reservation-log-stopped": "stopped",
+	"tog-blades":"Blade booking form",
 
 	"zzzzzzz":"If you can see me then something is wrong"
 }

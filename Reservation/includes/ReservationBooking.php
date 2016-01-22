@@ -179,6 +179,21 @@ class ReservationBooking extends ReservationObject {
 	}
 
   private function submitBookingFixedStartStop( $p ){
+//echo __FILE__ . " submitBookingFixedStartStop p <pre>" . print_r($p,1) . "</pre>";
+		if( isset( $p['resource'] ) && $p['resource'] > 0 ){
+			$capNew = $this->get_available_capacity_a( $p['resource'], $p['unixStart'], $p['unixEnd']) ;
+			$resourceHasCapacity = $capNew >= $p['quantity'];
+			$capNew = null;
+			if ( $resourceHasCapacity ){
+				$p['beneficiary'] = $this->user->getID();
+				$message = $this->saveBookingA($p);
+				return $message;
+			} else {
+				$message = wfMessage('reservation-message-could-not-book')->text();
+				return array( 'type'=>'warning','message'=>$message ) ;
+			}
+			$resourceHasCapacity = null;
+		}
 		$take=null;
 		if( isset( $p['take-from-group'] ) ){
 			$take =  $p['take-from-group'];

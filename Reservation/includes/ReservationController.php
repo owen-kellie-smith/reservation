@@ -345,8 +345,9 @@ class ReservationController  {
 			)
 			);
 		$rsort = array();
+		$rsort[0] = wfMessage('reservation-label-any-blade')->text();
 		if (count($ret)>0){
-			$rsort = array();
+//			$rsort = array();
 				for ($i=0, $ii=count($ret); $i < $ii; $i++){
 					$rsort[$ret[$i]['res_resource_id']]=" " . $ret[$i]['res_resource_name'];
 				}
@@ -356,6 +357,9 @@ class ReservationController  {
 
   private function get_quantity_labels(){
 			$rsort = array();
+				for ($i=1, $ii=$this->get_max_units(); $i <= $ii; $i++){
+					$rsort[strval($i)]=" " . $i . " " . (1==$i ? wfMessage('reservation-label-core')->text() : wfMessage('reservation-label-core-plural')->text() );
+				}
 				for ($i=1, $ii=$this->get_max_units(); $i <= $ii; $i = $this->unitMultiplier*$i){
 					$rsort[strval($i)]=" " . $i . " " . (1==$i ? wfMessage('reservation-label-core')->text() : wfMessage('reservation-label-core-plural')->text() );
 				}
@@ -418,11 +422,6 @@ class ReservationController  {
 
 	protected function get_booking_form( $unused ){
 		$p = array('method'=> 'POST', 'submit'=>wfMessage( 'reservation-label-get-new-booking')->text() , self::myMessage(  'reservation-post-booking'));
-/*
-		$p['select'][0]['select-options'] = $this->getResourceLabels() ;
-		$p['select'][0]['select-name'] = 'resource';
-		$p['select'][0]['select-label'] = self::myMessage(  'res-select-resource');
-*/
 		$p['select'][1]['select-options'] = $this->get_quantity_labels() ;
 		$p['select'][1]['select-name'] = 'quantity';
 		$p['select'][1]['select-label'] = self::myMessage(  'res-select-quantity');
@@ -439,6 +438,9 @@ class ReservationController  {
 			$p['select'][4]['select-name'] = 'deferral';
 			$p['select'][4]['select-label'] = self::myMessage(  'res-select-deferral');
 		}
+		$p['select'][5]['select-options'] = $this->getResourceLabels() ;
+		$p['select'][5]['select-name'] = 'resource';
+		$p['select'][5]['select-label'] = self::myMessage(  'res-select-resource');
 		$p['order'] = 'add_booking';
 		$p['formLabel'] = wfMessage('reservation-label-new-booking')->text();
 		if( isset($this->options['borrow']) ){

@@ -37,6 +37,9 @@
 		"ReservationAlias": "Reservation.i18n.alias.php"
 	},
 	"Hooks": {
+		"GetPreferences": [
+			"ReservationHooks::wfPrefHook"
+		],
 		"LoadExtensionSchemaUpdates": [
 			"ReservationHooks::mySchemaUpdate"
 		],

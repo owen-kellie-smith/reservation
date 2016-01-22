@@ -37,4 +37,30 @@ class ReservationHooks {
 		$files = array_merge( $files, glob( __DIR__ . '/tests/phpunit/*Test.php' ) );
 		return true;
 	}
+
+
+	public static function wfPrefHook( $user, &$preferences ) {
+		// A set of radio buttons. Notice that in the 'options' array,
+		// the keys are the text (not system messages), and the values are the HTML values.
+		// They keys/values might be the opposite of what you expect. PHP's array_flip()
+		// can be helpful here.
+	$preferences['myResPref'] = array(
+		'type' => 'radio',
+		'label-message' => 'tog-blades', // a system message
+		'section' => 'personal/info',
+		// Array of options. Key = text to display. Value = HTML <option> value.
+		'options' => array(
+			'Show fixed times e.g. 10:00' => 'choiceResFix',
+			'Show relative periods e.g. 1 hour' => 'choiceResRel',
+		),
+		'default' => 'choiceResRel',  // A 'default' key is required!
+		'help-message' => 'tog-help-blades', // a system message (optional)
+	);
+
+		// Required return value of a hook function.
+	return true;
+}
+
+
+
 }
