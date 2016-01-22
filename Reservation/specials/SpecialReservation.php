@@ -37,7 +37,7 @@ foreach ( array( '',
 
 class SpecialReservation extends SpecialPage {
 
-	private $showUglyDebugMessagesOnRenderedPage=false;
+	private $showUglyDebugMessagesOnRenderedPage=true;
 
 	public function __construct() {
 		parent::__construct( 'Reservation' );
@@ -89,6 +89,9 @@ class SpecialReservation extends SpecialPage {
 
 	private function outputDebugMessagesIfRequired( &$out, $result ){
 		if ($this->showUglyDebugMessagesOnRenderedPage){
+			$out->addHTML( "s->getUser()->getOption('myResPref'): <pre> " . 
+				print_r($this->getUser()->getOption('myResPref'), 1) . "</pre>" 
+			);
 			$out->addHTML( "s->getUser()->getGroups(): <pre> " . 
 				print_r($this->getUser()->getGroups(), 1) . "</pre>" 
 			);

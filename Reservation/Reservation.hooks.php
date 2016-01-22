@@ -50,8 +50,8 @@ class ReservationHooks {
 		'section' => 'personal/info',
 		// Array of options. Key = text to display. Value = HTML <option> value.
 		'options' => array(
-			'Show fixed times e.g. 10:00' => 'choiceResFix',
 			'Show relative periods e.g. 1 hour' => 'choiceResRel',
+			'Show fixed times e.g. 10:00' => 'choiceResFix',
 		),
 		'default' => 'choiceResRel',  // A 'default' key is required!
 		'help-message' => 'tog-help-blades', // a system message (optional)
