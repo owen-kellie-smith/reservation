@@ -53,7 +53,7 @@ class ReservationHooks {
 			'Show relative periods e.g. 1 hour' => 'choiceResRel',
 			'Show fixed times e.g. 10:00' => 'choiceResFix',
 		),
-		'default' => 'choiceResRel',  // A 'default' key is required!
+#		'default' => 'choiceResRel',  // A 'default' key is not required
 		'help-message' => 'tog-help-blades', // a system message (optional)
 	);
 

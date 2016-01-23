@@ -37,7 +37,7 @@ foreach ( array( '',
 
 class SpecialReservation extends SpecialPage {
 
-	private $showUglyDebugMessagesOnRenderedPage=true;
+	private $showUglyDebugMessagesOnRenderedPage=false;
 
 	public function __construct() {
 		parent::__construct( 'Reservation' );

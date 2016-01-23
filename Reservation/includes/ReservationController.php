@@ -369,7 +369,10 @@ class ReservationController  {
   private function get_duration_labels(){
 		$b = new ReservationBooking( $this->user, $this->title );
 		$scale = 60 / $b->getMinPerInt();
-			$rsort = array();
+		$rsort = array();
+		if ( $b->getBeneficiaryPrefersAbsoluteTime() ){
+			;
+		} else {
 			for ($i=0, $ii=$scale * $this->maxBookingDurationInHours; $i < $ii; $i++){
 				$label = null;
 				if (-1 == $i){
@@ -382,14 +385,20 @@ class ReservationController  {
 				$rsort[strval(($i+1.0)/$scale)]=" " . $label;
 				$label = null;
 			}
+		}
 		return $rsort;
 	}
 
   private function get_deferral_labels(){
-			$rsort = array();
-				for ($i=0, $ii=24 * $this->maxBookingDeferralInDays; $i < $ii; $i++){
-					$rsort[strval(($i))]=" " . wfMessage('reservation-label-starting')->text() . " " . (0==$i ? wfMessage('reservation-label-immediately')->text() : wfMessage('reservation-label-in')->text() . $i . " " .(1==$i ? wfMessage('reservation-label-hour')->text() : wfMessage('reservation-label-hour-plural')->text()));
-				}
+		$b = new ReservationBooking( $this->user, $this->title );
+		$rsort = array();
+		if ( $b->getBeneficiaryPrefersAbsoluteTime() ){
+			;
+		} else {
+			for ($i=0, $ii=24 * $this->maxBookingDeferralInDays; $i < $ii; $i++){
+				$rsort[strval(($i))]=" " . wfMessage('reservation-label-starting')->text() . " " . (0==$i ? wfMessage('reservation-label-immediately')->text() : wfMessage('reservation-label-in')->text() . $i . " " .(1==$i ? wfMessage('reservation-label-hour')->text() : wfMessage('reservation-label-hour-plural')->text()));
+			}
+		}
 		return $rsort;
 	}
 

@@ -100,6 +100,14 @@ class ReservationBooking extends ReservationObject {
 		return $this->beneficiaryName;
 	}
 
+	public function getBeneficiaryPrefersAbsoluteTime(){
+		if( 'choiceResFix' == $this->getUser()->getOption('myResPref')){
+			return true;
+		} else {
+			return false; # default
+		}
+	}
+
 /*
 	public function getBookingID(){
 		return $this->bookingID;
