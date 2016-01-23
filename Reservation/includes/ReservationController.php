@@ -371,7 +371,12 @@ class ReservationController  {
 		$scale = 60 / $b->getMinPerInt();
 		$rsort = array();
 		if ( $b->getBeneficiaryPrefersAbsoluteTime() ){
-			;
+			for ($i=0, $ii=$scale * $this->maxBookingDurationInHours; $i < $ii; $i++){
+				$label = null;
+				$label = wfMessage('reservation-label-required-for')->text() . " " . date( 'D G:i',($i+1.0)/$scale) . " " . wfMessage('reservation-label-hour-plural')->text();
+				$rsort[strval(($i+1.0)/$scale)]=" " . $label;
+				$label = null;
+			}
 		} else {
 			for ($i=0, $ii=$scale * $this->maxBookingDurationInHours; $i < $ii; $i++){
 				$label = null;
