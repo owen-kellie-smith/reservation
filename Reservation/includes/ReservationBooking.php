@@ -45,12 +45,25 @@ class ReservationBooking extends ReservationObject {
 	private $isDirty;
 	private $dateFormat = "%H:%i %W %e %b %y";
 	private $dateFormatUnixToLabel = "H:i D d-M-Y";
-	private $defaultMinPerInt=15;
+	private $defaultMinPerInt=60;
+	private $defaultMinPerIntFixed=15;
 	private $defaultHourNightStarts=17;
 	private $defaultHourNightEnds=10;
 
+	public function getMinPerIntFixed(){
+		return $this->minPerIntFixed();
+	}
+
 	public function getMinPerInt(){
 		return $this->minPerInt();
+	}
+
+	private function minPerIntFixed(){
+		if (isset($GLOBALS['wgReservationConstant']['minPerIntFixed'])){
+			return max(1, int($GLOBALS['wgReservationConstant']['minPerIntFixed']));
+		} else {
+			return $this->defaultMinPerIntFixed;
+		}
 	}
 
 	private function minPerInt(){
@@ -77,13 +90,15 @@ class ReservationBooking extends ReservationObject {
 		}
 	}
 	
-	private function roundedUpUnixTime( $seconds ){
-		return ceil($seconds / ($this->minPerInt() * 60)) * ($this->minPerInt() * 60); 
+	private function roundedUpUnixTime( $seconds, $minPerInt ){
+		return ceil($seconds / ($minPerInt * 60)) * ($minPerInt * 60); 
 	}
 
-	private function roundedDownUnixTime( $seconds ){
-		return floor($seconds / ($this->minPerInt() * 60)) * ($this->minPerInt() * 60); 
+/*
+	private function roundedDownUnixTime( $seconds, $minPerInt ){
+		return floor($seconds / ($minPerInt * 60)) * ($minPerInt * 60); 
 	}
+*/
 
 	public function __construct( User $user, Title $title ){
 		$this->user = $user;
@@ -101,10 +116,10 @@ class ReservationBooking extends ReservationObject {
 	}
 
 	private function getBeneficiaryPrefersAbsoluteTime(){
-		if( 'choiceResRel' == $this->getUser()->getOption('myResPref')){
-			return false;
+		if( 'choiceResFix' == $this->getUser()->getOption('myResPref')){
+			return true;
 		} else {
-			return true; # default
+			return false; # default
 		}
 	}
 
@@ -268,11 +283,11 @@ class ReservationBooking extends ReservationObject {
 			}
 			$_now = time();
 			if ( $p['deferral'] > 0 ){
-				$p['unixStart'] =  $this->roundedUpUnixTime( $_now + $this->secondsFromHours( $p['deferral'] ));
+				$p['unixStart'] =  $this->roundedUpUnixTime( $_now + $this->secondsFromHours( $p['deferral'] ), $this->minPerInt());
 			} else {
 				$p['unixStart'] =  $_now + $this->secondsFromHours( $p['deferral'] );
 			}
-			$p['unixEnd'] = $this->roundedUpUnixTime( $p['unixStart']) + $this->secondsFromHours( $p['duration'] ) ;
+			$p['unixEnd'] = $this->roundedUpUnixTime( $p['unixStart'], $this->minPerInt()) + $this->secondsFromHours( $p['duration'] ) ;
   			return $this->submitBookingFixedStartStop( $p );
 		} else {
 			$message = wfMessage('reservation-message-quantity-not-set')->text();
@@ -280,14 +295,15 @@ class ReservationBooking extends ReservationObject {
 		}
 	}
   
-  public function get_duration_labels( $maxBookingDurationInHours, $maxBookingDeferralInDays, $_now ){
+  public function get_duration_labels( $maxBookingDurationInHours, $maxBookingDurationInHoursFixed, $maxBookingDeferralInDays, $_now ){
 		$b = $this;
 		$scale = 60 / $b->getMinPerInt();
 		$rsort = array();
 		if ( $b->getBeneficiaryPrefersAbsoluteTime() ){
-			for ($i=0, $ii=$scale * ($maxBookingDurationInHours + 24 * $maxBookingDeferralInDays); $i < $ii; $i++){
+			$scale = 60 / $b->getMinPerIntFixed();
+			for ($i=0, $ii=$scale * ($maxBookingDurationInHoursFixed ); $i < $ii; $i++){
 				$term =  ($i+1.0)/$scale; 
-			  $unixStop = $this->roundedUpUnixTime( $_now + $this->secondsFromHours( $term ));
+			  $unixStop = $this->roundedUpUnixTime( $_now + $this->secondsFromHours( $term ), $this->minPerIntFixed());
 				$label = null;
 				$label = wfMessage('reservation-label-required-stop')->text() . " " . date( 'D d-M-Y G:i',$unixStop)  ;
 				$rsort[strval($unixStop)]=" " . $label;
@@ -295,6 +311,7 @@ class ReservationBooking extends ReservationObject {
 				$unixStop = null;
 				$term= null;	
 			}
+			$scale = null;
 		} else {
 			for ($i=0, $ii=$scale * $maxBookingDurationInHours; $i < $ii; $i++){
 				$label = null;
@@ -312,20 +329,22 @@ class ReservationBooking extends ReservationObject {
 		return $rsort;
 	}
 
-  public function get_deferral_labels( $maxBookingDeferralInDays, $_now ){
+  public function get_deferral_labels( $maxBookingDurationInHoursFixed, $maxBookingDeferralInDays, $_now ){
 		$b = $this;
 		$scale = 60 / $b->getMinPerInt();
 		$rsort = array();
 		if ( $b->getBeneficiaryPrefersAbsoluteTime() ){
+			$scale = 60 / $b->getMinPerIntFixed();
 			$rsort[strval($_now)]=" " . wfMessage('reservation-label-required-start')->text() . " " . 							wfMessage('reservation-label-required-now')->text() ;
-			for ($i=1, $ii=24 * $scale * $maxBookingDeferralInDays; $i < $ii; $i++){
-			  $unixStart = $this->roundedUpUnixTime( $_now + $this->secondsFromHours( $i/$scale ));
+			for ($i=1, $ii= $scale * $maxBookingDurationInHoursFixed; $i < $ii; $i++){
+			  $unixStart = $this->roundedUpUnixTime( $_now + $this->secondsFromHours( $i/$scale ), $this->minPerIntFixed() );
 				$label = null;
 				$label = wfMessage('reservation-label-required-start')->text() . " " . date( 'D d-M-Y G:i',$unixStart)  ;
 				$rsort[strval($unixStart)]=" " . $label;
 				$label = null;
 				$unixStart = null;
 			}
+			$scale = null;
 		} else {
 			for ($i=0, $ii=24 * $scale * $maxBookingDeferralInDays; $i < $ii; $i++){
 				$rsort[strval(($i))]=" " . wfMessage('reservation-label-starting')->text() . " " . (0==$i ? wfMessage('reservation-label-immediately')->text() : wfMessage('reservation-label-in')->text() . $i/$scale . " " .(1==$i/$scale ? wfMessage('reservation-label-hour')->text() : wfMessage('reservation-label-hour-plural')->text()));

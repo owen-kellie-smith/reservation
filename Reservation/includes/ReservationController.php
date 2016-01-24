@@ -38,6 +38,7 @@ class ReservationController  {
 	private $options;
 	private $unitMultiplier = 2; // units in dropdown go up in powers of this multiplier
 	private $maxBookingDurationInHours = 168;
+	private $maxBookingDurationInHoursFixed = 168;
 	private $maxBookingDeferralInDays = 7;
 	private $marginInSeconds=10; // time to allow database to write
 	private $blankTime = "";
@@ -369,12 +370,16 @@ class ReservationController  {
   private function get_duration_labels( $_now ){
 		$b = new ReservationBooking( $this->user, $this->title );
 		return $b->get_duration_labels( $this->maxBookingDurationInHours, 
+			$this->maxBookingDurationInHoursFixed, 
 			$this->maxBookingDeferralInDays, $_now );
 	}
 
   private function get_deferral_labels( $_now ){
 		$b = new ReservationBooking( $this->user, $this->title );
-		return $b->get_deferral_labels( $this->maxBookingDeferralInDays, $_now );
+		return $b->get_deferral_labels( 
+			$this->maxBookingDeferralInDays, 
+			$this->maxBookingDurationInHoursFixed,
+			$_now );
 	}
 
   private function get_beneficiary_labels(){
