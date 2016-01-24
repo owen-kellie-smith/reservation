@@ -89,24 +89,24 @@ class SpecialReservation extends SpecialPage {
 
 	private function outputDebugMessagesIfRequired( &$out, $result ){
 		if ($this->showUglyDebugMessagesOnRenderedPage){
-			$out->addHTML( "s->getUser()->getOption('myResPref'): <pre> " . 
-				print_r($this->getUser()->getOption('myResPref'), 1) . "</pre>" 
+			$out->addHTML( "s->getUser()->getOption('myResPref'): <pre> " 
+				 . print_r($this->getUser()->getOption('myResPref'), 1) . "</pre>" 
 			);
-			$out->addHTML( "s->getUser()->getGroups(): <pre> " . 
-				print_r($this->getUser()->getGroups(), 1) . "</pre>" 
+			$out->addHTML( "s->getUser()->getGroups(): <pre> " 
+				 . print_r($this->getUser()->getGroups(), 1) . "</pre>" 
 			);
-			$out->addHTML( "s->getUser()->getRights(): <pre> " . 
-				print_r($this->getUser()->getRights(), 1) . "</pre>" 
+			$out->addHTML( "s->getUser()->getRights(): <pre> " 
+				 . print_r($this->getUser()->getRights(), 1) . "</pre>" 
 			);
 			$b = new ReservationBeneficiary( $this->getUser() );
-			$out->addHTML( "beneficiary->getALlowableResources(): <pre> " . 
-				print_r($b->getAllowableResources(), 1) . "</pre>" 
+			$out->addHTML( "beneficiary->getALlowableResources(): <pre> " 
+				 . print_r($b->getAllowableResources(), 1) . "</pre>" 
 			);
-			$out->addHTML( "s->getRequest()->getValues(): <pre> " . 
-				print_r($this->getRequest()->getValues(), 1) . "</pre>" 
+			$out->addHTML( "s->getRequest()->getValues(): <pre> " 
+				 . print_r($this->getRequest()->getValues(), 1) . "</pre>" 
 			);
-			$out->addHTML( "result: <pre> " . 
-				print_r($result, 1) . "</pre>" 
+			$out->addHTML( "result: <pre> " 
+				 . print_r($result, 1) . "</pre>" 
 			);
 		}
 	}

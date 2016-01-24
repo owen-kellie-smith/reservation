@@ -37,7 +37,7 @@ class ReservationController  {
 	private $title;
 	private $options;
 	private $unitMultiplier = 2; // units in dropdown go up in powers of this multiplier
-	private $maxBookingDurationInHours = 168;
+	private $maxBookingDurationInHours = 1608;
 	private $maxBookingDeferralInDays = 60;
 	private $marginInSeconds=10; // time to allow database to write
 	private $blankTime = "";
@@ -366,45 +366,14 @@ class ReservationController  {
 		return $rsort;
 	}
 
-  private function get_duration_labels(){
+  private function get_duration_labels( $_now ){
 		$b = new ReservationBooking( $this->user, $this->title );
-		$scale = 60 / $b->getMinPerInt();
-		$rsort = array();
-		if ( $b->getBeneficiaryPrefersAbsoluteTime() ){
-			for ($i=0, $ii=$scale * $this->maxBookingDurationInHours; $i < $ii; $i++){
-				$label = null;
-				$label = wfMessage('reservation-label-required-for')->text() . " " . date( 'D G:i',($i+1.0)/$scale) . " " . wfMessage('reservation-label-hour-plural')->text();
-				$rsort[strval(($i+1.0)/$scale)]=" " . $label;
-				$label = null;
-			}
-		} else {
-			for ($i=0, $ii=$scale * $this->maxBookingDurationInHours; $i < $ii; $i++){
-				$label = null;
-				if (-1 == $i){
-					$label = wfMessage('reservation-label-a-few-moments')->text();
-				} elseif ( 1==($i+1.0)/$scale ){
-					$label = wfMessage('reservation-label-required-for')->text() . " " . ($i+1.0)/$scale . " " . wfMessage('reservation-label-hour')->text();
-				} else {
-					$label = wfMessage('reservation-label-required-for')->text() . " " . ($i+1.0)/$scale . " " . wfMessage('reservation-label-hour-plural')->text();
-				}
-				$rsort[strval(($i+1.0)/$scale)]=" " . $label;
-				$label = null;
-			}
-		}
-		return $rsort;
+		return $b->get_duration_labels( $this->maxBookingDurationInHours, $_now );
 	}
 
-  private function get_deferral_labels(){
+  private function get_deferral_labels( $_now ){
 		$b = new ReservationBooking( $this->user, $this->title );
-		$rsort = array();
-		if ( $b->getBeneficiaryPrefersAbsoluteTime() ){
-			;
-		} else {
-			for ($i=0, $ii=24 * $this->maxBookingDeferralInDays; $i < $ii; $i++){
-				$rsort[strval(($i))]=" " . wfMessage('reservation-label-starting')->text() . " " . (0==$i ? wfMessage('reservation-label-immediately')->text() : wfMessage('reservation-label-in')->text() . $i . " " .(1==$i ? wfMessage('reservation-label-hour')->text() : wfMessage('reservation-label-hour-plural')->text()));
-			}
-		}
-		return $rsort;
+		return $b->get_deferral_labels( $this->maxBookingDeferralInDays, $_now );
 	}
 
   private function get_beneficiary_labels(){
@@ -444,11 +413,12 @@ class ReservationController  {
 		$p['select'][2]['select-name'] = 'beneficiary';
 		$p['select'][2]['select-label'] = self::myMessage(  'res-select-beneficiary');
 */
-		$p['select'][3]['select-options'] = $this->get_duration_labels() ;
+		$_now = time();
+		$p['select'][3]['select-options'] = $this->get_duration_labels( $_now) ;
 		$p['select'][3]['select-name'] = 'duration';
 		$p['select'][3]['select-label'] = self::myMessage(  'res-select-duration');
 		if( $this->options['deferral'] ){
-			$p['select'][4]['select-options'] = $this->get_deferral_labels() ;
+			$p['select'][4]['select-options'] = $this->get_deferral_labels( $_now) ;
 			$p['select'][4]['select-name'] = 'deferral';
 			$p['select'][4]['select-label'] = self::myMessage(  'res-select-deferral');
 		}
