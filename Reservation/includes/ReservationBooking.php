@@ -280,12 +280,12 @@ class ReservationBooking extends ReservationObject {
 		}
 	}
   
-  public function get_duration_labels( $maxBookingDurationInHours, $_now ){
+  public function get_duration_labels( $maxBookingDurationInHours, $maxBookingDeferralInDays, $_now ){
 		$b = $this;
 		$scale = 60 / $b->getMinPerInt();
 		$rsort = array();
 		if ( $b->getBeneficiaryPrefersAbsoluteTime() ){
-			for ($i=0, $ii=$scale * $maxBookingDurationInHours; $i < $ii; $i++){
+			for ($i=0, $ii=$scale * ($maxBookingDurationInHours + 24 * $maxBookingDeferralInDays); $i < $ii; $i++){
 				$term =  ($i+1.0)/$scale; 
 			  $unixStop = $this->roundedUpUnixTime( $_now + $this->secondsFromHours( $term ));
 				$label = null;
