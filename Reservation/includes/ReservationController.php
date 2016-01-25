@@ -246,7 +246,7 @@ class ReservationController  {
 		$db = new ReservationDBInterface();
               	$vars = array(
 				'user_name', 
-				'unit_hours'=>'SUM(res_booking_units/3600*IF(unix_timestamp(res_booking_end)>unix_timestamp(res_booking_start), unix_timestamp(res_booking_end)-unix_timestamp(res_booking_start),0))',
+				'unit_hours'=>'ROUND(SUM(res_booking_units/3600*IF(unix_timestamp(res_booking_end)>unix_timestamp(res_booking_start), unix_timestamp(res_booking_end)-unix_timestamp(res_booking_start),0)),0)',
 				'timezone'=>"IF(res_booking_end < DATE_ADD( now(), INTERVAL " . $marginInSeconds . " SECOND ),'past',IF(res_booking_start > DATE_SUB( now(), INTERVAL " . $marginInSeconds . " SECOND),'future','now'))"
 			);
 //print_r($vars);
