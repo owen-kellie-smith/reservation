@@ -208,10 +208,10 @@ class ReservationController  {
 		$ret = array();
 		$db = new ReservationDBInterface();
               	$vars = array(	'res_resource_name', 
-				'unit_hours'=>'SUM(IFNULL(res_booking_units,0)
+				'unit_hours'=>'ROUND(SUM(IFNULL(res_booking_units,0)
 			 * IFNULL(res_booking_end > DATE_ADD( now(), INTERVAL ' . $marginInSeconds . ' SECOND ), 0)
 			* IFNULL(res_booking_start < DATE_ADD( now(), INTERVAL ' . $marginInSeconds . ' SECOND),0)
-			)',
+			),0)',
 			'res_group_name',
 			);
 //print_r($vars);
