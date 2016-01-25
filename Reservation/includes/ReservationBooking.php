@@ -60,7 +60,7 @@ class ReservationBooking extends ReservationObject {
 
 	private function minPerIntFixed(){
 		if (isset($GLOBALS['wgReservationConstant']['minPerIntFixed'])){
-			return max(1, int($GLOBALS['wgReservationConstant']['minPerIntFixed']));
+			return max(1, floor($GLOBALS['wgReservationConstant']['minPerIntFixed']));
 		} else {
 			return $this->defaultMinPerIntFixed;
 		}
@@ -68,7 +68,7 @@ class ReservationBooking extends ReservationObject {
 
 	private function minPerInt(){
 		if (isset($GLOBALS['wgReservationConstant']['minPerInt'])){
-			return max(1, int($GLOBALS['wgReservationConstant']['minPerInt']));
+			return max(1, floor($GLOBALS['wgReservationConstant']['minPerInt']));
 		} else {
 			return $this->defaultMinPerInt;
 		}
