@@ -347,7 +347,7 @@ class ReservationBooking extends ReservationObject {
 			$scale = null;
 		} else {
 			for ($i=0, $ii=24 * $scale * $maxBookingDeferralInDays; $i < $ii; $i++){
-				$rsort[strval(($i))]=" " . wfMessage('reservation-label-starting')->text() . " " . (0==$i ? wfMessage('reservation-label-immediately')->text() : wfMessage('reservation-label-in')->text() . $i/$scale . " " .(1==$i/$scale ? wfMessage('reservation-label-hour')->text() : wfMessage('reservation-label-hour-plural')->text()));
+				$rsort[strval(($i))]=" " . wfMessage('reservation-label-starting')->text() . " " . (0==$i ? wfMessage('reservation-label-immediately')->text() : wfMessage('reservation-label-in')->text() . " " . $i/$scale . " " .(1==$i/$scale ? wfMessage('reservation-label-hour')->text() : wfMessage('reservation-label-hour-plural')->text()));
 			}
 		}
 		return $rsort;
