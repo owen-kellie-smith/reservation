@@ -3,8 +3,8 @@
 		"authors": []
 	},
 	"reservation": "Reservation",
-	"reservation-desc": "This extension provides a form for booking scarce resources",
-	"reservation-helloworld": "Reservation Form",
+	"reservation-desc": "This extension provides a form for booking cores on blades",
+	"reservation-helloworld": "Book cores on blades",
 	"reservation-helloworld-intro": "Welcome to the Reservation Form",
 	"zzzzzzz":"If you can see me then something is wrong"
 }

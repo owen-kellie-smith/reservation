@@ -35,8 +35,8 @@ class ReservationBooking extends ReservationObject {
 
 	private $resourceName;
 	private $resourceID;
-	private $unixstart;
-	private $unixend;
+	private $unixStart;
+	private $unixEnd;
 	private $beneficiaryName;
 	private $units;
 	private $dateFormat = "%H:%i %W %e %b %y";
@@ -45,11 +45,11 @@ class ReservationBooking extends ReservationObject {
 	}
 
 	public function getUnixStart(){
-		return $this->unixstart;
+		return $this->unixStart;
 	}
 
 	public function getUnixEnd(){
-		return $this->unixend;
+		return $this->unixEnd;
 	}
 
 	public function getQuantity(){
@@ -67,8 +67,8 @@ class ReservationBooking extends ReservationObject {
 	private function nullify(){
 		$this->resourceName = null;
 		$this->resourceID = null;
-		$this->start = null;
-		$this->end = null;
+		$this->unixStart = null;
+		$this->unixEnd = null;
 		$this->beneficiaryName = null;
 		$this->units = null;
 	}
@@ -82,8 +82,8 @@ class ReservationBooking extends ReservationObject {
 			'res_resource_id',
 			'res_booking_units',
 	 		'res_beneficiary_name'=>'user_name',	
-			'res_booking_startU'=>"UNIX_TIMESTAMP(STR_TO_DATE(res_booking_start, '%M %d %Y %h:%i%p'))",
-			'res_booking_endU'=>"UNIX_TIMESTAMP(STR_TO_DATE(res_booking_end, '%M %d %Y %h:%i%p'))",
+			'res_booking_startU'=>"UNIX_TIMESTAMP(res_booking_start)",
+			'res_booking_endU'=>"UNIX_TIMESTAMP(res_booking_end)",
 			);
 		$res = $db->select(
 			array('res_booking','res_resource','res_unit','user'), 
@@ -95,6 +95,7 @@ class ReservationBooking extends ReservationObject {
 				'res_booking_id'=>$i,
 				)
 			);
+//print_r($res);
 		if (isset($res[0]['res_resource_name'])){
 			$this->resourceName = $res[0]['res_resource_name'];
 		}
@@ -108,10 +109,10 @@ class ReservationBooking extends ReservationObject {
 			$this->beneficiaryName = $res[0]['res_beneficiary_name'];
 		}
 		if (isset($res[0]['res_booking_startU'])){
-			$this->unixstart = $res[0]['res_booking_startU'];
+			$this->unixStart = $res[0]['res_booking_startU'];
 		}
 		if (isset($res[0]['res_booking_endU'])){
-			$this->unixend = $res[0]['res_booking_endU'];
+			$this->unixEnd = $res[0]['res_booking_endU'];
 		}
 	}
 					

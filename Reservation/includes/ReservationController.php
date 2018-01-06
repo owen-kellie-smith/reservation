@@ -47,7 +47,7 @@ class ReservationController  {
 
 	public function get_controller( $parameters) {
 		$this->processPost( $parameters );
-		$result['output']['unrendered']['table']['immediate'] = $this->getImmediateCapacityTable();
+		$result['output']['unrendered']['table']['immediate'] = $this->getImmediateCapacity();
 		$result['output']['unrendered']['table']['bookings'] = $this->getBookings();
 		$result['output']['unrendered']['table']['log'] = $this->getLog();
 	  	$result['output']['unrendered']['forms'][] = array(
@@ -121,15 +121,6 @@ class ReservationController  {
 		return $ret;
 	}
 
-	private function getImmediateCapacityTable(){
-		$result = array();
-		$result['data'] = $this->getImmediateCapacity();
-		$result['header'] = array(
-			'Resource','Immediately available cores','Available for (hours), starting at ' . date("Y-m-d H:i", time() )  
-		);
-		return $result;
-	}
-
 	private function processPost( $p) {
 		if( isset( $p['order'] )){
 			if ( 'add_booking' == $p['order'] && 
@@ -192,8 +183,11 @@ class ReservationController  {
 	}
 
 	private function getLogUpdateMessage( $newUnixTime, $bookingID ){
+
 		$b = new ReservationBooking();
 		$b->setID( $bookingID );
+//print_r( $newUnixTime );
+//print_r( $b->getUnixStart() );
 		if ($newUnixTime < $b->getUnixStart() ){
 			$verb = "cancelled";
 		} else {
@@ -216,7 +210,11 @@ class ReservationController  {
 	}
 
 	private function getLogTime( $unixTime ){
-		return date($this->dateFormatUnixToLabel, $unixTime );
+		if (is_numeric( $unixTime ) ){
+			return date($this->dateFormatUnixToLabel, $unixTime );
+		} else {
+			return $unixTime;
+		}
 	}
 
 	private function addToLog( $who, $unixWhen, $text ){
@@ -276,21 +274,29 @@ class ReservationController  {
 	}
 
 	private function getImmediateCapacity(){
+		$placeC=1; $placeD=0; $placeR = 2;
+		$result = array();
 		$ret = array();
+		$header = array();
 		$durs = array(1.0, 4.0, 16.0);
 		foreach( $durs as $d ){
 			$a = $this->getAlternativeCapacity( $d, 0, 0 );
 			if ( isset( $a['resource'] ) ){
 				$a['resource_name'] = $this->getResourceName($a['resource']) ; 
 				unset( $a['resource'] );
-				$a[] = $a['resource_name'];
-				$a[] = $a['capacity'];
+				$a[$placeR] = $a['resource_name'];
+				$a[$placeC] = $a['capacity'];
 			}
 			$a['duration'] = $d;
-			$a[] = $a['duration'];
+			$a[$placeD] = $a['duration'];
 			$ret[] = $a;
 		}
-		return $ret;
+		$result['data'] = $ret;
+		$header[$placeR] = 'Resource';
+		$header[$placeC] = 'Cores available';
+		$header[$placeD] = 'Hours required, starting at ' . date("Y-m-d H:i", time() )  ;
+		$result['header'] = $header;
+		return $result;
 	}
 
 	private function get_available_capacity( $resource_id, $duration, $deferral ) {

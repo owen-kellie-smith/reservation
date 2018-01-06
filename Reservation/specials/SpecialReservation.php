@@ -98,6 +98,7 @@ class SpecialReservation extends SpecialPage {
 			);
 		}
 		if (isset($res['immediate'])){
+			$out->addWikiText("==Where the most cores are available now==");
             		$out->addHTML( $res['immediate'] );
 		}
 		if (isset($res['forms'])){
@@ -106,9 +107,11 @@ class SpecialReservation extends SpecialPage {
 			}
 		}
 		if (isset($res['bookings'])){
+			$out->addWikiText("==Future bookings==");
             		$out->addHTML( $res['bookings'] );
 		}
 		if (isset($res['log'])){
+			$out->addWikiText("==Latest log==");
             		$out->addHTML( $res['log'] );
 		}
 	}
