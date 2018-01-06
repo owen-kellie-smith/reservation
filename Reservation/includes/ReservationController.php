@@ -50,6 +50,7 @@ class ReservationController  {
 		$result['output']['unrendered']['table']['immediate'] = $this->getImmediateCapacity();
 		$result['output']['unrendered']['table']['bookings'] = $this->getBookings();
 		$result['output']['unrendered']['table']['log'] = $this->getLog();
+		$result['output']['unrendered']['table']['usage'] = $this->getUsage();
 	  	$result['output']['unrendered']['forms'][] = array(
 			'content'=> $this->get_booking_form( NULL ),
 			'type'=>'select',
@@ -117,6 +118,30 @@ class ReservationController  {
 		$ret['data'] = $res;
 		$ret['header'] = array(
 			'Who','When','What',
+		);
+		return $ret;
+	}
+
+	private function getUsage(){
+		$marginInSeconds = 5;
+		$ret = array();
+		$db = new ReservationDBInterface();
+              	$vars = array(
+				'user_name', 
+				'unit_hours'=>'SUM(res_booking_units/3600*IF(unix_timestamp(res_booking_end)>unix_timestamp(res_booking_start), unix_timestamp(res_booking_end)-unix_timestamp(res_booking_start),0))',
+				'timezone'=>"IF(res_booking_end < DATE_ADD( now(), INTERVAL " . $marginInSeconds . " SECOND ),'past',IF(res_booking_start > DATE_SUB( now(), INTERVAL " . $marginInSeconds . " SECOND),'future','current'))"
+			);
+//print_r($vars);
+		$res = $db->select(
+			array('res_booking','user'), 
+			$vars,
+			array('user_id=res_booking_beneficiary_id'),
+			__METHOD__,
+			array( 'GROUP BY'=> array('res_booking_beneficiary_id', 'timezone'))
+			);
+		$ret['data'] = $res;
+		$ret['header'] = array(
+			'For','Core-hours','When',
 		);
 		return $ret;
 	}

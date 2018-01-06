@@ -110,6 +110,10 @@ class SpecialReservation extends SpecialPage {
 			$out->addWikiText("==Future bookings==");
             		$out->addHTML( $res['bookings'] );
 		}
+		if (isset($res['usage'])){
+			$out->addWikiText("==Usage by person==");
+            		$out->addHTML( $res['usage'] );
+		}
 		if (isset($res['log'])){
 			$out->addWikiText("==Latest log==");
             		$out->addHTML( $res['log'] );
