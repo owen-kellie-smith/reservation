@@ -138,6 +138,12 @@ class ReservationObject {
 		return ( $f->get_values()  == $this->get_values()       );
 	}
 
+
+	protected function secondsFromHours( $s ){
+		return $s * 60 * 60.0;
+	}
+
+
 					
 } // end of class
 
