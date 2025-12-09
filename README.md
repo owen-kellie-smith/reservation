@@ -20,3 +20,4 @@ This extension provides a special page which renders forms that enable the booki
 1. Go to the new Special page (check in the special pages for "Reservation").
 
 
+Archived Dec 2025
